@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Resources;
@@ -19,7 +20,7 @@ namespace projMe
     public partial class Form1 : Form
     {
 
-        Panel[] Squares = new Panel[28];
+        PictureBox[] Squares = new PictureBox[28];
         Color[] ColorsInit = new Color[14];
       
         int[] allPositions = new int[28];
@@ -33,22 +34,24 @@ namespace projMe
         int secondPos = -1;
         bool[] DiscoveredSquares = new bool[28];
         bool[] DefinedSquares = new bool[28];
-        bool AllowedToResize;
+        Label[] ColorPrevisionLabels = new Label[28];
         int nt = default;
-        Panel[] Tentativi = new Panel[0];
-        bool gameIsWithTries = false;
+        Image HiddenSquareImg = Image.FromFile(Path.Combine(@"imgs", "not_seen.png"));
+        Panel[] Attempts = new Panel[0];
+        bool gameIsWithAttempts = false;
+        bool gameHasColorsShown = false;
         public Form1()
         {
             InitializeComponent();
         }
         private async void Sq_Click(object sender, EventArgs e)
         {
-            Panel ClickedSquare = sender as Panel;
+            PictureBox ClickedSquare = sender as PictureBox;
             
-            if (ClickedSquare.BackgroundImage != panelImageDefault.BackgroundImage)
+            if (ClickedSquare.Image != HiddenSquareImg)
                 return;
             ClickedSquare.BackColor = (Color)ClickedSquare.Tag;
-            ClickedSquare.BackgroundImage = null;
+            ClickedSquare.Image = null;
             
 
             //MessageBox.Show(ClickedSquare.BackColor.ToString());
@@ -110,13 +113,26 @@ namespace projMe
                     MessageBox.Show("hai vinto");
                     await Task.Delay(2000);
                     
-                    for (int j = 0; j < 28; j++)
+                    
+
+                    Squares = new PictureBox[28];
+                    if (gameIsWithAttempts)
                     {
-                        this.Controls.Remove(Squares[j]);
+                        for (int a = 0; a<nt; a++)
+                        {
+                            this.Controls.Remove(Attempts[nt-1]);
+                        }
+                        nt = default;
                     }
-                    Squares = new Panel[28];
+                    if (gameHasColorsShown)
+                    {
+                        for (int a = 0; a < 28; a++)
+                        {
+                            this.Controls.Remove(ColorPrevisionLabels[a]);
+                        }
+                    }
                     buttonStartGame.Visible = true;
-                    Application.Restart();
+                    panelSettingsGame.Visible = true;
                     return;
                 }
                 for (int i = 0; i<28; i++)
@@ -124,12 +140,12 @@ namespace projMe
                     Squares[i].Enabled = false;
                 }
                 await Task.Delay(1000);
-                if (gameIsWithTries)
+                if (gameIsWithAttempts)
                 {
                     nt--;
-                    Tentativi[nt].BackColor = Color.White;
+                    Attempts[nt].BackColor = Color.White;
                     labelTentativi.Text = $"Tentativi: {nt}";
-                    if (Tentativi[0].BackColor == Color.White)
+                    if (Attempts[0].BackColor == Color.White)
                     {
                         MessageBox.Show("hai perso");
                         await Task.Delay(1000);
@@ -142,12 +158,12 @@ namespace projMe
                 {
                     if (DiscoveredSquares[i] && !DefinedSquares[i])
                     {
-                        Squares[i].BackgroundImage = panelImageDefault.BackgroundImage;
-                   //     Squares[i].BackColor = default;
+                        Squares[i].Image = HiddenSquareImg;
+                   
                         DiscoveredSquares[i] = false;
-                        Squares[firstPos].BackgroundImage = panelImageDefault.BackgroundImage;
+                        Squares[firstPos].Image = HiddenSquareImg;
                         DiscoveredSquares[firstPos] = false;
-                    //    Squares[firstPos].BackColor = default;
+                    
                     }
                 }
                 
@@ -180,42 +196,42 @@ namespace projMe
         }
         private void HoverInsideSquare(object sender, EventArgs e)
         {
-            if ((sender as Panel).BackgroundImage == panelImageDefault.BackgroundImage)
+            if ((sender as PictureBox).Image == HiddenSquareImg)
             Cursor = Cursors.Hand;
         }
-        private void HoverExit(object sender, EventArgs e)
+            private void HoverExit(object sender, EventArgs e)
+            {
+                Cursor = Cursors.Default;
+            }
+            private void buttonStartGame_Click(object sender, EventArgs e)
         {
-            Cursor = Cursors.Default;
-        }
-        private void buttonStartGame_Click(object sender, EventArgs e)
-        {
-            panelSettings.Visible = false;
-            panelSettings.Enabled = false;
+            panelSettingsGame.Visible = false;
+            
         
             
             
             
             this.Size = new Size(screenWidth, screenHeight);
             this.MaximizeBox = false;
-            //this.MinimizeBox = false;
+            
             if (checkUseTentativi.Checked)
             {
                 nt = int.Parse(txtTentativi.Text);  
-                gameIsWithTries = true;
+                gameIsWithAttempts = true;
                 int halfScreenWidth = screenWidth / 2;
                 Panel panelFirst = new Panel();
                 panelFirst.Location = new Point(10, 10);
                 panelFirst.Size = new Size(screenWidth/2/nt, 30);
                 panelFirst.BackColor = Color.Lime;
                 panelFirst.BorderStyle = BorderStyle.FixedSingle;
-                Array.Resize(ref Tentativi, nt);
-                Tentativi[0] = panelFirst;
+                Array.Resize(ref Attempts, nt);
+                Attempts[0] = panelFirst;
                 this.Controls.Add(panelFirst);
                 for (int i = 1; i<nt; i++)
                 {
                     Panel panel = new Panel();
-                    Tentativi[i] = panel;
-                    panel.Location = new Point(Tentativi[i - 1].Size.Width + Tentativi[i-1].Location.X, 10);
+                    Attempts[i] = panel;
+                    panel.Location = new Point(Attempts[i - 1].Size.Width + Attempts[i-1].Location.X, 10);
                     panel.Size = new Size(screenWidth / 2 / nt, 30);
                     panel.BackColor = Color.Lime;
                     panel.BorderStyle = BorderStyle.FixedSingle;
@@ -262,8 +278,9 @@ namespace projMe
             #region addPanels
             for (int a = 0; a < 14; a++)
             {
-                Panel x = new Panel();
+                PictureBox x = new PictureBox();
                 x.Size = new Size(100, 100);
+                x.SizeMode = PictureBoxSizeMode.StretchImage;
                 Squares[a] = x;
                 Squares[a].Tag = ColorsInit[a];
 
@@ -271,51 +288,39 @@ namespace projMe
             }
             for (int a = 14; a < 28; a++)
             {
-                Panel x = new Panel();
+                PictureBox x = new PictureBox();
                 x.Size = new Size(100, 100);
                 Squares[a] = x;
                 Squares[a].Tag = ColorsInit[a - 14];
             }
-
-
-            
-
-            //while (numUsedPositions < 27)
-            
-                
-            
-
-
-            
-            
 
             #endregion
             #region addControls...
             for (int a = 0; a < 7; a++)
             {
                 Squares[a].Location = new Point(SpaceBordersAndSquaresWidth + 200 * a, SpaceBordersAndSquaresHeight);
-                Squares[a].BackgroundImage = panelImageDefault.BackgroundImage;
+                Squares[a].Image = HiddenSquareImg;
                 Squares[a].BorderStyle = BorderStyle.FixedSingle;
                 this.Controls.Add(Squares[a]);
             }
             for (int a = 7; a < 14; a++)
             {
                 Squares[a].Location = new Point(SpaceBordersAndSquaresWidth + 200 * (a - 7), SpaceBordersAndSquaresHeight + 200);
-                Squares[a].BackgroundImage = panelImageDefault.BackgroundImage;
+                Squares[a].Image = HiddenSquareImg;
                 Squares[a].BorderStyle = BorderStyle.FixedSingle;
                 this.Controls.Add(Squares[a]);
             }
             for (int a = 14; a < 21; a++)
             {
                 Squares[a].Location = new Point(SpaceBordersAndSquaresWidth + 200 * (a - 14), SpaceBordersAndSquaresHeight + 400);
-                Squares[a].BackgroundImage = panelImageDefault.BackgroundImage;
+                Squares[a].Image = HiddenSquareImg;
                 Squares[a].BorderStyle = BorderStyle.FixedSingle;
                 this.Controls.Add(Squares[a]);
             }
             for (int a = 21; a < 28; a++)
             {
                 Squares[a].Location = new Point(SpaceBordersAndSquaresWidth + 200 * (a - 21), SpaceBordersAndSquaresHeight + 600);
-                Squares[a].BackgroundImage = panelImageDefault.BackgroundImage;
+                Squares[a].Image = HiddenSquareImg;
                 Squares[a].BorderStyle = BorderStyle.FixedSingle;
                 this.Controls.Add(Squares[a]);
             }
@@ -331,40 +336,15 @@ namespace projMe
             }
             if (CheckColorPrevision.Checked)
             {
-                for (int a = 0; a < 7; a++)
+                gameHasColorsShown = true;
+                for (int a = 0; a < 28; a++)
                 {
                     Label l = new Label();
-                    l.Location = new Point(200 * a + 100, 100 - 40);
+                    l.Location = new Point(Squares[a].Location.X, Squares[a].Location.Y-30);
                     l.Size = new Size(100, 30);
                     l.ForeColor = (Color)Squares[a].Tag;
                     l.Text = Squares[a].Tag.ToString();
-                    this.Controls.Add(l);
-                }
-                for (int a = 7; a < 14; a++)
-                {
-                    Label l = new Label();
-                    l.Location = new Point(200 * (a - 7) + 100, 300 - 40);
-                    l.Size = new Size(100, 30);
-                    l.ForeColor = (Color)Squares[a].Tag;
-                    l.Text = Squares[a].Tag.ToString();
-                    this.Controls.Add(l);
-                }
-                for (int a = 14; a < 21; a++)
-                {
-                    Label l = new Label();
-                    l.Location = new Point(200 * (a - 14) + 100, 500 - 40);
-                    l.Size = new Size(100, 30);
-                    l.ForeColor = (Color)Squares[a].Tag;
-                    l.Text = Squares[a].Tag.ToString();
-                    this.Controls.Add(l);
-                }
-                for (int a = 21; a < 28; a++)
-                {
-                    Label l = new Label();
-                    l.Location = new Point(200 * (a - 21) + 100, 700 - 40);
-                    l.Size = new Size(100, 30);
-                    l.ForeColor = (Color)Squares[a].Tag;
-                    l.Text = Squares[a].Tag.ToString();
+                    ColorPrevisionLabels[a] = l;
                     this.Controls.Add(l);
                 }
             }
@@ -383,12 +363,12 @@ namespace projMe
 
             #endregion
             buttonStartGame.Visible = false;
-            CheckColorPrevision.Visible = false;
+            
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            AllowedToResize = true;
+            
             this.FormBorderStyle = FormBorderStyle.None;
             this.WindowState = FormWindowState.Maximized;
             buttonFullscreen.Text = "Esci da Fullscreen";
@@ -397,33 +377,20 @@ namespace projMe
             buttonStartGame.Location = new Point(screenWidth / 2 - buttonStartGame.Width / 2, screenHeight / 2 - buttonStartGame.Width / 2);
             buttonFullscreen.Size = new Size(150, 40);
             buttonFullscreen.Location = new Point(this.Size.Width - 200, 0);
-            panelSettings.Location = new Point(buttonStartGame.Location.X, buttonStartGame.Location.Y+buttonStartGame.Size.Height+4);
+            panelSettingsGame.Location = new Point(buttonStartGame.Location.X, buttonStartGame.Location.Y+buttonStartGame.Size.Height+4);
             labelTentativi.Location = new Point(screenWidth / 2 + 10, 20);
             labelTentativi.Size = new Size(20, 20);
             buttonRestart.Location = new Point(screenWidth - buttonRestart.Width, screenHeight - buttonRestart.Height);
                
         }
-        private void Form1_Resize(object sender, EventArgs e)
-        {
-            if (AllowedToResize)
-            {
-               
-                return;
-            }
-            this.Size = new Size(screenWidth, screenHeight);
-            this.Location = new Point(0, 0);
-            AllowedToResize = false;
-        }
-        private void Form1_MoveOnScreen(object sender, EventArgs e)
-        {
-            this.Location = new Point(0, 0);
-        }
+        
+       
 
         private void buttonFullscreen_Click(object sender, EventArgs e)
         {
             if (this.WindowState == FormWindowState.Normal)
             {
-                AllowedToResize = true;
+                
                 this.FormBorderStyle = FormBorderStyle.None;
                 this.WindowState = FormWindowState.Maximized;
                 buttonFullscreen.Text = "Esci da Fullscreen";
@@ -431,7 +398,7 @@ namespace projMe
             }
             if (this.WindowState == FormWindowState.Maximized)
             {
-                AllowedToResize = true;
+                
                 this.FormBorderStyle = FormBorderStyle.Sizable;
                 this.WindowState = FormWindowState.Normal;
                 this.MaximizeBox = false;

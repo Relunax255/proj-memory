@@ -29,21 +29,19 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.buttonStartGame = new System.Windows.Forms.Button();
-            this.panelImageDefault = new System.Windows.Forms.Panel();
             this.CheckColorPrevision = new System.Windows.Forms.CheckBox();
             this.buttonFullscreen = new System.Windows.Forms.Button();
             this.buttonMinusTentativi = new System.Windows.Forms.Button();
             this.buttonPlusTentativi = new System.Windows.Forms.Button();
             this.txtTentativi = new System.Windows.Forms.TextBox();
             this.checkUseTentativi = new System.Windows.Forms.CheckBox();
-            this.panelSettings = new System.Windows.Forms.Panel();
+            this.panelSettingsGame = new System.Windows.Forms.Panel();
             this.labelTentativi = new System.Windows.Forms.Label();
             this.buttonRestart = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
-            this.panelSettings.SuspendLayout();
+            this.panelSettingsGame.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonStartGame
@@ -58,16 +56,6 @@
             this.buttonStartGame.UseVisualStyleBackColor = true;
             this.buttonStartGame.Click += new System.EventHandler(this.buttonStartGame_Click);
             // 
-            // panelImageDefault
-            // 
-            this.panelImageDefault.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("panelImageDefault.BackgroundImage")));
-            this.panelImageDefault.Location = new System.Drawing.Point(1033, 299);
-            this.panelImageDefault.Margin = new System.Windows.Forms.Padding(4);
-            this.panelImageDefault.Name = "panelImageDefault";
-            this.panelImageDefault.Size = new System.Drawing.Size(133, 123);
-            this.panelImageDefault.TabIndex = 1;
-            this.panelImageDefault.Visible = false;
-            // 
             // CheckColorPrevision
             // 
             this.CheckColorPrevision.AutoSize = true;
@@ -80,6 +68,7 @@
             // 
             // buttonFullscreen
             // 
+            this.buttonFullscreen.Enabled = false;
             this.buttonFullscreen.Location = new System.Drawing.Point(1148, 27);
             this.buttonFullscreen.Name = "buttonFullscreen";
             this.buttonFullscreen.Size = new System.Drawing.Size(150, 42);
@@ -134,17 +123,17 @@
             this.checkUseTentativi.UseVisualStyleBackColor = true;
             this.checkUseTentativi.CheckedChanged += new System.EventHandler(this.checkUseTentativi_CheckedChanged);
             // 
-            // panelSettings
+            // panelSettingsGame
             // 
-            this.panelSettings.Controls.Add(this.CheckColorPrevision);
-            this.panelSettings.Controls.Add(this.checkUseTentativi);
-            this.panelSettings.Controls.Add(this.buttonMinusTentativi);
-            this.panelSettings.Controls.Add(this.txtTentativi);
-            this.panelSettings.Controls.Add(this.buttonPlusTentativi);
-            this.panelSettings.Location = new System.Drawing.Point(536, 363);
-            this.panelSettings.Name = "panelSettings";
-            this.panelSettings.Size = new System.Drawing.Size(242, 137);
-            this.panelSettings.TabIndex = 8;
+            this.panelSettingsGame.Controls.Add(this.CheckColorPrevision);
+            this.panelSettingsGame.Controls.Add(this.checkUseTentativi);
+            this.panelSettingsGame.Controls.Add(this.buttonMinusTentativi);
+            this.panelSettingsGame.Controls.Add(this.txtTentativi);
+            this.panelSettingsGame.Controls.Add(this.buttonPlusTentativi);
+            this.panelSettingsGame.Location = new System.Drawing.Point(536, 363);
+            this.panelSettingsGame.Name = "panelSettingsGame";
+            this.panelSettingsGame.Size = new System.Drawing.Size(242, 137);
+            this.panelSettingsGame.TabIndex = 8;
             // 
             // labelTentativi
             // 
@@ -172,19 +161,16 @@
             this.ClientSize = new System.Drawing.Size(1924, 1055);
             this.Controls.Add(this.buttonRestart);
             this.Controls.Add(this.labelTentativi);
-            this.Controls.Add(this.panelSettings);
+            this.Controls.Add(this.panelSettingsGame);
             this.Controls.Add(this.buttonFullscreen);
-            this.Controls.Add(this.panelImageDefault);
             this.Controls.Add(this.buttonStartGame);
             this.Margin = new System.Windows.Forms.Padding(0);
             this.Name = "Form1";
             this.Text = "memory";
             this.Load += new System.EventHandler(this.Form1_Load);
-            this.Move += new System.EventHandler(this.Form1_MoveOnScreen);
-            this.Resize += new System.EventHandler(this.Form1_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
-            this.panelSettings.ResumeLayout(false);
-            this.panelSettings.PerformLayout();
+            this.panelSettingsGame.ResumeLayout(false);
+            this.panelSettingsGame.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -194,14 +180,13 @@
 
         private System.Windows.Forms.BindingSource bindingSource1;
         private System.Windows.Forms.Button buttonStartGame;
-        private System.Windows.Forms.Panel panelImageDefault;
         private System.Windows.Forms.CheckBox CheckColorPrevision;
         private System.Windows.Forms.Button buttonFullscreen;
         private System.Windows.Forms.Button buttonMinusTentativi;
         private System.Windows.Forms.Button buttonPlusTentativi;
         private System.Windows.Forms.TextBox txtTentativi;
         private System.Windows.Forms.CheckBox checkUseTentativi;
-        private System.Windows.Forms.Panel panelSettings;
+        private System.Windows.Forms.Panel panelSettingsGame;
         private System.Windows.Forms.Label labelTentativi;
         private System.Windows.Forms.Button buttonRestart;
     }

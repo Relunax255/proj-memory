@@ -10,11 +10,6 @@ namespace projMe
 {
     internal class Class1
     {
-        public static void Swap(ref string a, ref string b)
-        {
-            string temp = a;
-            a = b;
-            b = temp;
-        }
+        
     }
 }

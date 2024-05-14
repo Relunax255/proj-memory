@@ -30,7 +30,7 @@ namespace projMe
         //int SpaceBordersAndSquaresWidth = (Screen.PrimaryScreen.Bounds.Width - 1300) / 2;
         //int SpaceBordersAndSquaresHeight = (Screen.PrimaryScreen.Bounds.Height - 700) / 2;
 
-        int Ht = Screen.PrimaryScreen.Bounds.Height/15;
+        int defSize = Screen.PrimaryScreen.Bounds.Height/8;
 
         int firstPos = -1;
         int secondPos = -1;
@@ -275,24 +275,12 @@ namespace projMe
             #endregion
             #endregion //colori
 
-            Panel BoxesInside = new Panel()
-            {
-                Width = Ht * 13,
-                Height = Ht * 7,
-                Location = new Point(Ht, Ht),
-                BorderStyle = BorderStyle.FixedSingle,
-            };
-            if (9 * Ht > screenHeight)
-            {
-                Ht = screenHeight / 9;
-                
-                BoxesInside.Location = new Point(Ht, Ht);
-            }
-                #region addPanels
+           
+                #region squaresDefinitions
                 for (int a = 0; a < 14; a++)
             {
                 PictureBox x = new PictureBox();
-                x.Size = new Size(100, 100);
+                x.Size = new Size(defSize, defSize);
                 x.SizeMode = PictureBoxSizeMode.StretchImage;
                 Squares[a] = x;
                 Squares[a].Tag = ColorsInit[a];
@@ -302,16 +290,27 @@ namespace projMe
             for (int a = 14; a < 28; a++)
             {
                 PictureBox x = new PictureBox();
-                x.Size = new Size(100, 100);
+                x.Size = new Size(defSize, defSize);
                 Squares[a] = x;
                 Squares[a].Tag = ColorsInit[a - 14];
             }
+            for (int x = 0; x < 28; x++)
+            {
+                var random = new Faker();
+                int rc = random.PickRandom(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27);
+                Color tagColor = (Color)Squares[x].Tag;
+                Squares[x].Tag = (Color)Squares[rc].Tag;
+                Squares[rc].Tag = tagColor;
 
+
+            }
             #endregion
             #region addControls...
+            Random rand = new Random();
+
             for (int a = 0; a < 7; a++)
             {
-                Squares[a].Location = new Point(Ht+2*a*Ht);
+                Squares[a].Location = new Point(rand.Next(defSize, screenWidth-2*defSize), rand.Next(defSize, screenHeight-2*defSize));
                 Squares[a].Image = HiddenSquareImg;
                 Squares[a].BorderStyle = BorderStyle.FixedSingle;
                 this.Controls.Add(Squares[a]);
@@ -337,16 +336,7 @@ namespace projMe
                 Squares[a].BorderStyle = BorderStyle.FixedSingle;
                 this.Controls.Add(Squares[a]);
             }
-            for (int x = 0; x < 28; x++)
-            {
-                var random = new Faker();
-                int rc = random.PickRandom(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27);
-                Color tagColor = (Color)Squares[x].Tag;
-                Squares[x].Tag = (Color)Squares[rc].Tag;
-                Squares[rc].Tag = tagColor;
-
-
-            }
+            
             if (CheckColorPrevision.Checked)
             {
                 gameHasColorsShown = true;

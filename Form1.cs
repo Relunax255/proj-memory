@@ -49,14 +49,14 @@ namespace projMe
         private async void Sq_Click(object sender, EventArgs e)
         {
             PictureBox ClickedSquare = sender as PictureBox;
-            
+           
             if (ClickedSquare.Image != HiddenSquareImg)
                 return;
             ClickedSquare.BackColor = (Color)ClickedSquare.Tag;
             ClickedSquare.Image = null;
             
 
-            //MessageBox.Show(ClickedSquare.BackColor.ToString());
+            
             int numDiscovers = 0;
             for (int i = 0; i < 28; i++)
             {
@@ -291,6 +291,7 @@ namespace projMe
             {
                 PictureBox x = new PictureBox();
                 x.Size = new Size(defSize, defSize);
+                x.SizeMode = PictureBoxSizeMode.StretchImage;
                 Squares[a] = x;
                 Squares[a].Tag = ColorsInit[a - 14];
             }
@@ -307,35 +308,33 @@ namespace projMe
             #endregion
             #region addControls...
             Random rand = new Random();
-
-            for (int a = 0; a < 7; a++)
+            
+            for (int a = 0; a < 28; a++)
             {
-                Squares[a].Location = new Point(rand.Next(defSize, screenWidth-2*defSize), rand.Next(defSize, screenHeight-2*defSize));
-                Squares[a].Image = HiddenSquareImg;
-                Squares[a].BorderStyle = BorderStyle.FixedSingle;
-                this.Controls.Add(Squares[a]);
+                bool locationIsOk = false;
+                while (!locationIsOk)
+                {
+                    locationIsOk = true;
+                    Squares[a].Location = new Point(rand.Next(defSize, screenWidth - 2 * defSize), rand.Next(defSize, screenHeight - 2 * defSize));
+                    
+                    Squares[a].Image = HiddenSquareImg;
+                    Squares[a].BorderStyle = BorderStyle.FixedSingle;
+                    for (int c = 0; c<a; c++)
+                    {
+                        if ((Squares[a].Location.X - Squares[c].Location.X < (defSize+5) && Squares[a].Location.X - Squares[c].Location.X > (-defSize-5)) && (Squares[a].Location.Y - Squares[c].Location.Y < (defSize+5) && Squares[a].Location.Y - Squares[c].Location.Y > (-defSize-5)))
+                        {
+                            locationIsOk = false;
+                            break;
+                        }
+                    }
+                    
+                    this.Controls.Add(Squares[a]);
+                    
+                    
+                }
+                
             }
-            for (int a = 7; a < 14; a++)
-            {
-                Squares[a].Location = new Point();
-                Squares[a].Image = HiddenSquareImg;
-                Squares[a].BorderStyle = BorderStyle.FixedSingle;
-                this.Controls.Add(Squares[a]);
-            }
-            for (int a = 14; a < 21; a++)
-            {
-                Squares[a].Location = new Point();
-                Squares[a].Image = HiddenSquareImg;
-                Squares[a].BorderStyle = BorderStyle.FixedSingle;
-                this.Controls.Add(Squares[a]);
-            }
-            for (int a = 21; a < 28; a++)
-            {
-                Squares[a].Location = new Point();
-                Squares[a].Image = HiddenSquareImg;
-                Squares[a].BorderStyle = BorderStyle.FixedSingle;
-                this.Controls.Add(Squares[a]);
-            }
+           
             
             if (CheckColorPrevision.Checked)
             {

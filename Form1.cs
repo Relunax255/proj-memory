@@ -27,9 +27,11 @@ namespace projMe
         
         int screenHeight = Screen.PrimaryScreen.Bounds.Height;
         int screenWidth = Screen.PrimaryScreen.Bounds.Width;
-        int SpaceBordersAndSquaresWidth = (Screen.PrimaryScreen.Bounds.Width - 1300) / 2;
-        int SpaceBordersAndSquaresHeight = (Screen.PrimaryScreen.Bounds.Height - 700) / 2;
-        
+        //int SpaceBordersAndSquaresWidth = (Screen.PrimaryScreen.Bounds.Width - 1300) / 2;
+        //int SpaceBordersAndSquaresHeight = (Screen.PrimaryScreen.Bounds.Height - 700) / 2;
+
+        int Ht = Screen.PrimaryScreen.Bounds.Height/15;
+
         int firstPos = -1;
         int secondPos = -1;
         bool[] DiscoveredSquares = new bool[28];
@@ -203,41 +205,40 @@ namespace projMe
             {
                 Cursor = Cursors.Default;
             }
-            private void buttonStartGame_Click(object sender, EventArgs e)
+        private void buttonStartGame_Click(object sender, EventArgs e)
         {
             panelSettingsGame.Visible = false;
-            
-        
-            
-            
-            
+
+
+
+
             this.Size = new Size(screenWidth, screenHeight);
             this.MaximizeBox = false;
-            
+
             if (checkUseTentativi.Checked)
             {
-                nt = int.Parse(txtTentativi.Text);  
+                nt = int.Parse(txtTentativi.Text);
                 gameIsWithAttempts = true;
                 int halfScreenWidth = screenWidth / 2;
                 Panel panelFirst = new Panel();
                 panelFirst.Location = new Point(10, 10);
-                panelFirst.Size = new Size(screenWidth/2/nt, 30);
+                panelFirst.Size = new Size(screenWidth / 2 / nt, 30);
                 panelFirst.BackColor = Color.Lime;
                 panelFirst.BorderStyle = BorderStyle.FixedSingle;
                 Array.Resize(ref Attempts, nt);
                 Attempts[0] = panelFirst;
                 this.Controls.Add(panelFirst);
-                for (int i = 1; i<nt; i++)
+                for (int i = 1; i < nt; i++)
                 {
                     Panel panel = new Panel();
                     Attempts[i] = panel;
-                    panel.Location = new Point(Attempts[i - 1].Size.Width + Attempts[i-1].Location.X, 10);
+                    panel.Location = new Point(Attempts[i - 1].Size.Width + Attempts[i - 1].Location.X, 10);
                     panel.Size = new Size(screenWidth / 2 / nt, 30);
                     panel.BackColor = Color.Lime;
                     panel.BorderStyle = BorderStyle.FixedSingle;
                     this.Controls.Add(panel);
                 }
-                labelTentativi.Text = $"Tentativi: {nt}";            }
+                labelTentativi.Text = $"Tentativi: {nt}"; }
             #region Pre-settaggio
             #region addColorsToArray
             ColorsInit[0] = Color.Yellow;
@@ -272,11 +273,23 @@ namespace projMe
             #region Tentativi
 
             #endregion
-            #endregion
+            #endregion //colori
 
-
-            #region addPanels
-            for (int a = 0; a < 14; a++)
+            Panel BoxesInside = new Panel()
+            {
+                Width = Ht * 13,
+                Height = Ht * 7,
+                Location = new Point(Ht, Ht),
+                BorderStyle = BorderStyle.FixedSingle,
+            };
+            if (9 * Ht > screenHeight)
+            {
+                Ht = screenHeight / 9;
+                
+                BoxesInside.Location = new Point(Ht, Ht);
+            }
+                #region addPanels
+                for (int a = 0; a < 14; a++)
             {
                 PictureBox x = new PictureBox();
                 x.Size = new Size(100, 100);
@@ -298,28 +311,28 @@ namespace projMe
             #region addControls...
             for (int a = 0; a < 7; a++)
             {
-                Squares[a].Location = new Point(SpaceBordersAndSquaresWidth + 200 * a, SpaceBordersAndSquaresHeight);
+                Squares[a].Location = new Point(Ht+2*a*Ht);
                 Squares[a].Image = HiddenSquareImg;
                 Squares[a].BorderStyle = BorderStyle.FixedSingle;
                 this.Controls.Add(Squares[a]);
             }
             for (int a = 7; a < 14; a++)
             {
-                Squares[a].Location = new Point(SpaceBordersAndSquaresWidth + 200 * (a - 7), SpaceBordersAndSquaresHeight + 200);
+                Squares[a].Location = new Point();
                 Squares[a].Image = HiddenSquareImg;
                 Squares[a].BorderStyle = BorderStyle.FixedSingle;
                 this.Controls.Add(Squares[a]);
             }
             for (int a = 14; a < 21; a++)
             {
-                Squares[a].Location = new Point(SpaceBordersAndSquaresWidth + 200 * (a - 14), SpaceBordersAndSquaresHeight + 400);
+                Squares[a].Location = new Point();
                 Squares[a].Image = HiddenSquareImg;
                 Squares[a].BorderStyle = BorderStyle.FixedSingle;
                 this.Controls.Add(Squares[a]);
             }
             for (int a = 21; a < 28; a++)
             {
-                Squares[a].Location = new Point(SpaceBordersAndSquaresWidth + 200 * (a - 21), SpaceBordersAndSquaresHeight + 600);
+                Squares[a].Location = new Point();
                 Squares[a].Image = HiddenSquareImg;
                 Squares[a].BorderStyle = BorderStyle.FixedSingle;
                 this.Controls.Add(Squares[a]);

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -38,10 +39,12 @@ namespace projMe
         bool[] DefinedSquares = new bool[28];
         Label[] ColorPrevisionLabels = new Label[28];
         int nt = default;
-        Image HiddenSquareImg = Image.FromFile(Path.Combine(@"imgs", "not_seen.png"));
+        Image HiddenSquareImg = Image.FromFile(Path.Combine(@"img", "not_seen.png"));
         Panel[] Attempts = new Panel[0];
         bool gameIsWithAttempts = false;
         bool gameHasColorsShown = false;
+        FlowLayoutPanel flw = new FlowLayoutPanel();
+
         public Form1()
         {
             InitializeComponent();
@@ -98,8 +101,8 @@ namespace projMe
                         Squares[i].Enabled = false;
                     }
                     await Task.Delay(500);
-                    this.Controls.Remove(Squares[firstPos]);
-                    this.Controls.Remove(Squares[secondPos]);
+                    flw.Controls.Remove(Squares[firstPos]);
+                    flw.Controls.Remove(Squares[secondPos]);
                     for (int i = 0; i < 28; i++)
                     {
                         Squares[i].Enabled = true;
@@ -205,12 +208,20 @@ namespace projMe
             {
                 Cursor = Cursors.Default;
             }
+        private void hoverButton(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Hand;
+        }
         private void buttonStartGame_Click(object sender, EventArgs e)
         {
             panelSettingsGame.Visible = false;
 
 
-
+           
+            flw.Size = new Size(Width - 100, Height - 100);
+            flw.Location = new Point(50, 50);
+            //flw.BorderStyle = BorderStyle.FixedSingle;
+            this.Controls.Add(flw);
 
             this.Size = new Size(screenWidth, screenHeight);
             this.MaximizeBox = false;
@@ -307,35 +318,65 @@ namespace projMe
             }
             #endregion
             #region addControls...
-            Random rand = new Random();
-            
+            //Random rand = new Random();
+            int defPadding = 11;
             for (int a = 0; a < 28; a++)
             {
-                bool locationIsOk = false;
-                while (!locationIsOk)
-                {
-                    locationIsOk = true;
-                    Squares[a].Location = new Point(rand.Next(defSize, screenWidth - 2 * defSize), rand.Next(defSize, screenHeight - 2 * defSize));
-                    
-                    Squares[a].Image = HiddenSquareImg;
-                    Squares[a].BorderStyle = BorderStyle.FixedSingle;
-                    for (int c = 0; c<a; c++)
-                    {
-                        if ((Squares[a].Location.X - Squares[c].Location.X < (defSize+5) && Squares[a].Location.X - Squares[c].Location.X > (-defSize-5)) && (Squares[a].Location.Y - Squares[c].Location.Y < (defSize+5) && Squares[a].Location.Y - Squares[c].Location.Y > (-defSize-5)))
-                        {
-                            locationIsOk = false;
-                            break;
-                        }
-                    }
-                    if (locationIsOk) {
-                    this.Controls.Add(Squares[a]); break; }
-                    
-                    
-                }
-                
+                //bool locationIsOk = false;
+                //while (!locationIsOk)
+                //{
+                //    locationIsOk = true;
+                //    //Squares[a].Location = new Point(rand.Next(defSize, screenWidth - 2 * defSize), rand.Next(defSize, screenHeight - 2 * defSize));
+
+                //    //Squares[a].Image = HiddenSquareImg;
+                //    //Squares[a].BorderStyle = BorderStyle.FixedSingle;
+                //    //for (int c = 0; c<a; c++)
+                //    //{
+                //    //    if ((Squares[a].Location.X - Squares[c].Location.X < (defSize+50) && Squares[a].Location.X - Squares[c].Location.X > (-defSize-50)) && (Squares[a].Location.Y - Squares[c].Location.Y < (defSize+50) && Squares[a].Location.Y - Squares[c].Location.Y > (-defSize-50)))
+                //    //    {
+                //    //        locationIsOk = false;
+                //    //        break;
+                //    //    }
+                //    //}
+                //    if (locationIsOk) {
+                //    flowLayoutPanel1.Controls.Add(Squares[a]); break; }
+
+
+                //}
+
+                //Squares[a].Location = new Point(rand.Next(defSize, screenWidth - 2 * defSize), rand.Next(defSize, screenHeight - 2 * defSize));
+                Squares[a].Margin = new Padding(defPadding);
+                Squares[a].Image = HiddenSquareImg;
+                Squares[a].BorderStyle = BorderStyle.FixedSingle;
+                flw.Controls.Add(Squares[a]);
+
             }
-           
-            
+            int inRowBoxes = 1;
+            int yPos = Squares[0].Location.Y;
+            for (int n = 1; n < 28; n++)
+            {
+                if (Squares[n].Location.Y == yPos)
+                {
+                    inRowBoxes++;
+                }
+                else { break; }
+            }
+            //
+            int inColBoxes = 1;
+            int xPos = Squares[0].Location.X;
+            for (int n = inRowBoxes; n < 28; n=n+inRowBoxes)
+            {
+                if (Squares[n].Location.X == xPos)
+                {
+                    inColBoxes++;
+                }
+                else { break; }
+            }
+            //MessageBox.Show(inRowBoxes.ToString());
+            flw.Size = new Size(inRowBoxes * defSize + 2 * (inRowBoxes * defPadding) + 2, inColBoxes * defSize + 2 * (inColBoxes * defPadding) + 2);
+            flw.Location = new Point(this.Width / 2 - flw.Width / 2, this.Height/2-flw.Height/2);
+
+
             if (CheckColorPrevision.Checked)
             {
                 gameHasColorsShown = true;
@@ -355,9 +396,9 @@ namespace projMe
 
             for (int i = 0; i < 28; i++)
             {
-                this.Squares[i].Click += new System.EventHandler(Sq_Click);
-                this.Squares[i].MouseEnter += new System.EventHandler(HoverInsideSquare);
-                this.Squares[i].MouseLeave += new System.EventHandler(HoverExit);
+                Squares[i].Click += new System.EventHandler(Sq_Click);
+                Squares[i].MouseEnter += new System.EventHandler(HoverInsideSquare);
+                Squares[i].MouseLeave += new System.EventHandler(HoverExit);
             }
 
 
@@ -372,43 +413,32 @@ namespace projMe
         {
             
             this.FormBorderStyle = FormBorderStyle.None;
-            this.WindowState = FormWindowState.Maximized;
-            buttonFullscreen.Text = "Esci da Fullscreen";
+            this.WindowState = FormWindowState.Maximized;  
             this.Location = new Point(0, 0);
             this.Size = new Size(screenWidth, screenHeight);
             buttonStartGame.Location = new Point(screenWidth / 2 - buttonStartGame.Width / 2, screenHeight / 2 - buttonStartGame.Width / 2);
-            buttonFullscreen.Size = new Size(150, 40);
-            buttonFullscreen.Location = new Point(this.Size.Width - 200, 0);
             panelSettingsGame.Location = new Point(buttonStartGame.Location.X, buttonStartGame.Location.Y+buttonStartGame.Size.Height+4);
             labelTentativi.Location = new Point(screenWidth / 2 + 10, 20);
             labelTentativi.Size = new Size(20, 20);
             buttonRestart.Location = new Point(screenWidth - buttonRestart.Width, screenHeight - buttonRestart.Height);
-               
+
+            Button buttonExit = new Button()
+            {
+                Size = new Size(30, 30),
+                Location = new Point(this.Width - 30, 0),
+                BackColor = Color.Red,
+                Text = "x",
+                ForeColor = Color.White,
+                TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+
+            };
+            this.Controls.Add(buttonExit);
+            buttonExit.Click += new System.EventHandler(exit);
         }
         
        
 
-        private void buttonFullscreen_Click(object sender, EventArgs e)
-        {
-            if (this.WindowState == FormWindowState.Normal)
-            {
-                
-                this.FormBorderStyle = FormBorderStyle.None;
-                this.WindowState = FormWindowState.Maximized;
-                buttonFullscreen.Text = "Esci da Fullscreen";
-                return;
-            }
-            if (this.WindowState == FormWindowState.Maximized)
-            {
-                
-                this.FormBorderStyle = FormBorderStyle.Sizable;
-                this.WindowState = FormWindowState.Normal;
-                this.MaximizeBox = false;
-                buttonFullscreen.Text = "Entra in Fullscreen (consigliato)";
-                return;
-            }
-            
-        }
+       
 
         private void checkUseTentativi_CheckedChanged(object sender, EventArgs e)
         {
@@ -450,6 +480,25 @@ namespace projMe
         private void buttonRestart_Click(object sender, EventArgs e)
         {
             Application.Restart();
+        }
+        private void exit(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(flw.Margin.ToString());
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(Squares[0].Location.ToString());
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            this.Controls.Add(Squares[0]);
         }
     }
 }

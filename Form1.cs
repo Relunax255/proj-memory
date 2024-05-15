@@ -327,8 +327,8 @@ namespace projMe
                             break;
                         }
                     }
-                    
-                    this.Controls.Add(Squares[a]);
+                    if (locationIsOk) {
+                    this.Controls.Add(Squares[a]); break; }
                     
                     
                 }

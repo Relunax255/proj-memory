@@ -43,8 +43,7 @@ namespace projMe
         Panel[] Attempts = new Panel[0];
         bool gameIsWithAttempts = false;
         bool gameHasColorsShown = false;
-        FlowLayoutPanel flw = new FlowLayoutPanel();
-
+        
         public Form1()
         {
             InitializeComponent();
@@ -101,8 +100,8 @@ namespace projMe
                         Squares[i].Enabled = false;
                     }
                     await Task.Delay(500);
-                    flw.Controls.Remove(Squares[firstPos]);
-                    flw.Controls.Remove(Squares[secondPos]);
+                    this.Controls.Remove(Squares[firstPos]);
+                    this.Controls.Remove(Squares[secondPos]);
                     for (int i = 0; i < 28; i++)
                     {
                         Squares[i].Enabled = true;
@@ -214,13 +213,16 @@ namespace projMe
         }
         private void buttonStartGame_Click(object sender, EventArgs e)
         {
+            FlowLayoutPanel flw = new FlowLayoutPanel();
+
+            int defPadding = 11;
             panelSettingsGame.Visible = false;
 
 
            
             flw.Size = new Size(Width - 100, Height - 100);
             flw.Location = new Point(50, 50);
-            //flw.BorderStyle = BorderStyle.FixedSingle;
+            flw.BorderStyle = BorderStyle.FixedSingle;
             this.Controls.Add(flw);
 
             this.Size = new Size(screenWidth, screenHeight);
@@ -281,19 +283,20 @@ namespace projMe
                 DefinedSquares[i] = false;
             }
             #endregion
-            #region Tentativi
-
+            
             #endregion
-            #endregion //colori
 
            
-                #region squaresDefinitions
+            #region squaresDefinitions
                 for (int a = 0; a < 14; a++)
             {
                 PictureBox x = new PictureBox();
                 x.Size = new Size(defSize, defSize);
                 x.SizeMode = PictureBoxSizeMode.StretchImage;
                 Squares[a] = x;
+                Squares[a].Margin = new Padding(defPadding);
+                Squares[a].Image = HiddenSquareImg;
+                Squares[a].BorderStyle = BorderStyle.FixedSingle;
                 Squares[a].Tag = ColorsInit[a];
 
 
@@ -304,6 +307,9 @@ namespace projMe
                 x.Size = new Size(defSize, defSize);
                 x.SizeMode = PictureBoxSizeMode.StretchImage;
                 Squares[a] = x;
+                Squares[a].Margin = new Padding(defPadding);
+                Squares[a].Image = HiddenSquareImg;
+                Squares[a].BorderStyle = BorderStyle.FixedSingle;
                 Squares[a].Tag = ColorsInit[a - 14];
             }
             for (int x = 0; x < 28; x++)
@@ -319,35 +325,10 @@ namespace projMe
             #endregion
             #region addControls...
             //Random rand = new Random();
-            int defPadding = 11;
+            
             for (int a = 0; a < 28; a++)
             {
-                //bool locationIsOk = false;
-                //while (!locationIsOk)
-                //{
-                //    locationIsOk = true;
-                //    //Squares[a].Location = new Point(rand.Next(defSize, screenWidth - 2 * defSize), rand.Next(defSize, screenHeight - 2 * defSize));
-
-                //    //Squares[a].Image = HiddenSquareImg;
-                //    //Squares[a].BorderStyle = BorderStyle.FixedSingle;
-                //    //for (int c = 0; c<a; c++)
-                //    //{
-                //    //    if ((Squares[a].Location.X - Squares[c].Location.X < (defSize+50) && Squares[a].Location.X - Squares[c].Location.X > (-defSize-50)) && (Squares[a].Location.Y - Squares[c].Location.Y < (defSize+50) && Squares[a].Location.Y - Squares[c].Location.Y > (-defSize-50)))
-                //    //    {
-                //    //        locationIsOk = false;
-                //    //        break;
-                //    //    }
-                //    //}
-                //    if (locationIsOk) {
-                //    flowLayoutPanel1.Controls.Add(Squares[a]); break; }
-
-
-                //}
-
-                //Squares[a].Location = new Point(rand.Next(defSize, screenWidth - 2 * defSize), rand.Next(defSize, screenHeight - 2 * defSize));
-                Squares[a].Margin = new Padding(defPadding);
-                Squares[a].Image = HiddenSquareImg;
-                Squares[a].BorderStyle = BorderStyle.FixedSingle;
+                
                 flw.Controls.Add(Squares[a]);
 
             }
@@ -376,6 +357,26 @@ namespace projMe
             flw.Size = new Size(inRowBoxes * defSize + 2 * (inRowBoxes * defPadding) + 2, inColBoxes * defSize + 2 * (inColBoxes * defPadding) + 2);
             flw.Location = new Point(this.Width / 2 - flw.Width / 2, this.Height/2-flw.Height/2);
 
+            int firstSquareXpos = flw.Location.X + defPadding;
+            int firstSquareYpos = flw.Location.Y + defPadding;
+            int column = 0;
+            int m = 0;
+            
+            for (int i = 0; i < 28; i = i + inRowBoxes)
+            {
+                int p = 0;
+                while (m < inRowBoxes*(column+1) && m < 28)
+                {
+                    flw.Controls.Remove(Squares[m]);
+                    Squares[m].Location = new Point(firstSquareXpos + p * (defSize + 2 * defPadding), firstSquareYpos + column * (defSize + 2 * defPadding));
+                    this.Controls.Add(Squares[m]);
+                    m++;
+                    p++;
+                }
+                
+                column++;
+            }
+            this.Controls.Remove(flw);
 
             if (CheckColorPrevision.Checked)
             {
@@ -407,6 +408,7 @@ namespace projMe
             #endregion
             buttonStartGame.Visible = false;
             
+            
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -427,7 +429,6 @@ namespace projMe
                 Size = new Size(30, 30),
                 Location = new Point(this.Width - 30, 0),
                 BackColor = Color.Red,
-                Text = "x",
                 ForeColor = Color.White,
                 TextAlign = System.Drawing.ContentAlignment.MiddleCenter
 
@@ -486,19 +487,13 @@ namespace projMe
             Application.Exit();
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show(flw.Margin.ToString());
-        }
+        
 
         private void button2_Click(object sender, EventArgs e)
         {
             MessageBox.Show(Squares[0].Location.ToString());
         }
 
-        private void button3_Click(object sender, EventArgs e)
-        {
-            this.Controls.Add(Squares[0]);
-        }
+        
     }
 }

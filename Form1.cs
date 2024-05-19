@@ -28,8 +28,7 @@ namespace projMe
         
         int screenHeight = Screen.PrimaryScreen.Bounds.Height;
         int screenWidth = Screen.PrimaryScreen.Bounds.Width;
-        //int SpaceBordersAndSquaresWidth = (Screen.PrimaryScreen.Bounds.Width - 1300) / 2;
-        //int SpaceBordersAndSquaresHeight = (Screen.PrimaryScreen.Bounds.Height - 700) / 2;
+        
 
         int defSize = Screen.PrimaryScreen.Bounds.Height/8;
 
@@ -213,13 +212,56 @@ namespace projMe
         }
         private void buttonStartGame_Click(object sender, EventArgs e)
         {
+            buttonStartGame.Visible = false;
+            panelSettingsGame.Visible = false;
+            Panel setNicknamesPanel = new Panel();
+            setNicknamesPanel.Size = new Size(this.Width / 3, this.Height / 4);
+            setNicknamesPanel.Location = new Point(this.Width / 2 - setNicknamesPanel.Width / 2, this.Height / 2 - setNicknamesPanel.Height / 2);
+            setNicknamesPanel.BackColor = Color.White;
+            setNicknamesPanel.BorderStyle = BorderStyle.FixedSingle;
+            this.Controls.Add(setNicknamesPanel);
+            Panel nick1 = new Panel();
+            nick1.Size = new Size(setNicknamesPanel.Width / 2 - 4, setNicknamesPanel.Height - 4);
+            nick1.Location = new Point(1, 1);
+            nick1.BackColor = Color.Green;
+            TextBox nick1insert = new TextBox();
+            nick1insert.Width = nick1.Width * 2/3;
+            nick1insert.Location = new Point(nick1.Width/2-nick1insert.Width/2, nick1.Height/2-nick1insert.Height/2);
+            Button nick1Confirm = new Button();
+            nick1Confirm.Size = new Size(nick1insert.Width, nick1insert.Height * 2);
+            nick1Confirm.Location = new Point(nick1insert.Location.X, nick1insert.Location.Y+(nick1.Height-nick1insert.Location.Y)/2);
+            nick1Confirm.Text = "Confirm";
+            nick1Confirm.ForeColor = Color.White;
+            nick1.Controls.Add(nick1insert);
+            nick1.Controls.Add(nick1Confirm);
+            
+            Panel nick2 = new Panel();
+            nick2.Size = new Size(setNicknamesPanel.Width / 2 - 4, setNicknamesPanel.Height - 4);
+            nick2.Location = new Point(nick1.Width+5, 1);
+            nick2.BackColor = Color.Green;
+            TextBox nick2insert = new TextBox();
+            nick2insert.Width = nick2.Width * 2 / 3;
+            nick2insert.Location = new Point(nick2.Width / 2 - nick2insert.Width / 2, nick2.Height / 2 - nick2insert.Height / 2);
+            Button nick2Confirm = new Button();
+            nick2Confirm.Size = new Size(nick2insert.Width, nick2insert.Height * 2);
+            nick2Confirm.Location = new Point(nick2insert.Location.X, nick2insert.Location.Y + (nick2.Height - nick2insert.Location.Y) / 2);
+            nick2Confirm.Text = "Confirm";
+            nick2Confirm.ForeColor = Color.White;
+            nick2.Controls.Add(nick2insert);
+            nick2.Controls.Add(nick2Confirm);
+            setNicknamesPanel.Controls.Add(nick1);
+            setNicknamesPanel.Controls.Add(nick2);
+
+        }
+        private void gameStart()
+        {
             FlowLayoutPanel flw = new FlowLayoutPanel();
 
             int defPadding = 11;
             panelSettingsGame.Visible = false;
 
 
-           
+
             flw.Size = new Size(Width - 100, Height - 100);
             flw.Location = new Point(50, 50);
             flw.BorderStyle = BorderStyle.FixedSingle;
@@ -228,30 +270,7 @@ namespace projMe
             this.Size = new Size(screenWidth, screenHeight);
             this.MaximizeBox = false;
 
-            if (checkUseTentativi.Checked)
-            {
-                nt = int.Parse(txtTentativi.Text);
-                gameIsWithAttempts = true;
-                int halfScreenWidth = screenWidth / 2;
-                Panel panelFirst = new Panel();
-                panelFirst.Location = new Point(10, 10);
-                panelFirst.Size = new Size(screenWidth / 2 / nt, 30);
-                panelFirst.BackColor = Color.Lime;
-                panelFirst.BorderStyle = BorderStyle.FixedSingle;
-                Array.Resize(ref Attempts, nt);
-                Attempts[0] = panelFirst;
-                this.Controls.Add(panelFirst);
-                for (int i = 1; i < nt; i++)
-                {
-                    Panel panel = new Panel();
-                    Attempts[i] = panel;
-                    panel.Location = new Point(Attempts[i - 1].Size.Width + Attempts[i - 1].Location.X, 10);
-                    panel.Size = new Size(screenWidth / 2 / nt, 30);
-                    panel.BackColor = Color.Lime;
-                    panel.BorderStyle = BorderStyle.FixedSingle;
-                    this.Controls.Add(panel);
-                }
-                labelTentativi.Text = $"Tentativi: {nt}"; }
+
             #region Pre-settaggio
             #region addColorsToArray
             ColorsInit[0] = Color.Yellow;
@@ -283,12 +302,12 @@ namespace projMe
                 DefinedSquares[i] = false;
             }
             #endregion
-            
+
             #endregion
 
-           
+
             #region squaresDefinitions
-                for (int a = 0; a < 14; a++)
+            for (int a = 0; a < 14; a++)
             {
                 PictureBox x = new PictureBox();
                 x.Size = new Size(defSize, defSize);
@@ -324,11 +343,11 @@ namespace projMe
             }
             #endregion
             #region addControls...
-            //Random rand = new Random();
-            
+
+
             for (int a = 0; a < 28; a++)
             {
-                
+
                 flw.Controls.Add(Squares[a]);
 
             }
@@ -345,7 +364,7 @@ namespace projMe
             //
             int inColBoxes = 1;
             int xPos = Squares[0].Location.X;
-            for (int n = inRowBoxes; n < 28; n=n+inRowBoxes)
+            for (int n = inRowBoxes; n < 28; n = n + inRowBoxes)
             {
                 if (Squares[n].Location.X == xPos)
                 {
@@ -355,17 +374,17 @@ namespace projMe
             }
             //MessageBox.Show(inRowBoxes.ToString());
             flw.Size = new Size(inRowBoxes * defSize + 2 * (inRowBoxes * defPadding) + 2, inColBoxes * defSize + 2 * (inColBoxes * defPadding) + 2);
-            flw.Location = new Point(this.Width / 2 - flw.Width / 2, this.Height/2-flw.Height/2);
+            flw.Location = new Point(this.Width / 2 - flw.Width / 2, this.Height / 2 - flw.Height / 2);
 
             int firstSquareXpos = flw.Location.X + defPadding;
             int firstSquareYpos = flw.Location.Y + defPadding;
             int column = 0;
             int m = 0;
-            
+
             for (int i = 0; i < 28; i = i + inRowBoxes)
             {
                 int p = 0;
-                while (m < inRowBoxes*(column+1) && m < 28)
+                while (m < inRowBoxes * (column + 1) && m < 28)
                 {
                     flw.Controls.Remove(Squares[m]);
                     Squares[m].Location = new Point(firstSquareXpos + p * (defSize + 2 * defPadding), firstSquareYpos + column * (defSize + 2 * defPadding));
@@ -373,7 +392,7 @@ namespace projMe
                     m++;
                     p++;
                 }
-                
+
                 column++;
             }
             this.Controls.Remove(flw);
@@ -384,7 +403,7 @@ namespace projMe
                 for (int a = 0; a < 28; a++)
                 {
                     Label l = new Label();
-                    l.Location = new Point(Squares[a].Location.X, Squares[a].Location.Y-30);
+                    l.Location = new Point(Squares[a].Location.X, Squares[a].Location.Y - 30);
                     l.Size = new Size(100, 30);
                     l.ForeColor = (Color)Squares[a].Tag;
                     l.Text = Squares[a].Tag.ToString();
@@ -407,8 +426,6 @@ namespace projMe
 
             #endregion
             buttonStartGame.Visible = false;
-            
-            
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -441,42 +458,7 @@ namespace projMe
 
        
 
-        private void checkUseTentativi_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkUseTentativi.Checked)
-            {
-                buttonPlusTentativi.Enabled = true;
-                buttonMinusTentativi.Enabled = true;
-               
-            }
-            else
-            {
-                buttonPlusTentativi.Enabled = false;
-                buttonMinusTentativi.Enabled = false;
-                
-            }
-        }
-
-        private void buttonMinusTentativi_Click(object sender, EventArgs e)
-        {
-            
-            int trsCorr = int.Parse(txtTentativi.Text);
-            if (trsCorr > 1)
-            {
-                trsCorr = trsCorr - 1;
-                txtTentativi.Text = trsCorr.ToString();
-            }
-        }
-
-        private void buttonPlusTentativi_Click(object sender, EventArgs e)
-        {
-            int trsCorr = int.Parse(txtTentativi.Text);
-            if (trsCorr < 50)
-            {
-                trsCorr = trsCorr + 1;
-                txtTentativi.Text = trsCorr.ToString();
-            }
-        }
+       
 
         private void buttonRestart_Click(object sender, EventArgs e)
         {

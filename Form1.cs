@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Resources;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,15 +38,19 @@ namespace projMe
         bool[] DiscoveredSquares = new bool[28];
         bool[] DefinedSquares = new bool[28];
         Label[] ColorPrevisionLabels = new Label[28];
-        int nt = default;
         Image HiddenSquareImg = Image.FromFile(Path.Combine(@"img", "not_seen.png"));
-        Panel[] Attempts = new Panel[0];
-        bool gameIsWithAttempts = false;
         bool gameHasColorsShown = false;
-        
+        bool p1status = false;
+        bool p2status = false;
+        string player1nickname = default;
+        string player2nickname = default;
+        int player1pt = default;
+        int player2pt = default;
+        int CurrentPlayer = default;
         public Form1()
         {
             InitializeComponent();
+            
         }
         private async void Sq_Click(object sender, EventArgs e)
         {
@@ -101,6 +106,18 @@ namespace projMe
                     await Task.Delay(500);
                     this.Controls.Remove(Squares[firstPos]);
                     this.Controls.Remove(Squares[secondPos]);
+                    if (CurrentPlayer == 1)
+                    {
+                        player1pt++;
+                        this.Controls.Find("p1pts", false)[0].Text = player1pt.ToString();
+                    }
+                    else
+                    {
+                        player2pt++;
+
+                        this.Controls.Find("p2pts", false)[0].Text = player2pt.ToString();
+                        this.Controls.Find("p2pts", false)[0].Location = new Point(this.Controls.Find("p2lbl", false)[0].Location.X - this.Controls.Find("p2pts", false)[0].Width, 30);
+                    }
                     for (int i = 0; i < 28; i++)
                     {
                         Squares[i].Enabled = true;
@@ -109,24 +126,32 @@ namespace projMe
                     {
                         if (!DefinedSquares[i])
                         {
-                            //  Win = false;
+                           
                             return;
                         }
                     }
-                    MessageBox.Show("hai vinto");
+                    //MessageBox.Show("hai vinto");
+
                     await Task.Delay(2000);
                     
-                    
-
-                    Squares = new PictureBox[28];
-                    if (gameIsWithAttempts)
+                    if (player1pt>player2pt)
                     {
-                        for (int a = 0; a<nt; a++)
-                        {
-                            this.Controls.Remove(Attempts[nt-1]);
-                        }
-                        nt = default;
+                        MessageBox.Show($"{player1nickname} wins");
                     }
+                    else
+                    {
+                        MessageBox.Show($"{player2nickname} wins");
+                    }
+                    //
+                    Squares = new PictureBox[28];
+                    p1status = false;
+                    p2status = false;
+                    this.Controls.Remove(this.Controls.Find("p1pts", false)[0]);
+                    this.Controls.Remove(this.Controls.Find("p1lbl", false)[0]);
+                    this.Controls.Remove(this.Controls.Find("p2pts", false)[0]);
+                    this.Controls.Remove(this.Controls.Find("p2lbl", false)[0]);
+                    player1pt = 0;
+                    player2pt = 0;
                     if (gameHasColorsShown)
                     {
                         for (int a = 0; a < 28; a++)
@@ -136,6 +161,7 @@ namespace projMe
                     }
                     buttonStartGame.Visible = true;
                     panelSettingsGame.Visible = true;
+                    //
                     return;
                 }
                 for (int i = 0; i<28; i++)
@@ -143,20 +169,15 @@ namespace projMe
                     Squares[i].Enabled = false;
                 }
                 await Task.Delay(1000);
-                if (gameIsWithAttempts)
-                {
-                    nt--;
-                    Attempts[nt].BackColor = Color.White;
-                    labelTentativi.Text = $"Tentativi: {nt}";
-                    if (Attempts[0].BackColor == Color.White)
-                    {
-                        MessageBox.Show("hai perso");
-                        await Task.Delay(1000);
-                        Application.Restart();
-                        return;
-                    }
-                }
                 
+                if (CurrentPlayer == 1)
+                {
+                    CPisNow2();
+                }
+                else
+                {
+                    CPisNow1();
+                }
                 for (int i = 0; i < 28; i++)
                 {
                     if (DiscoveredSquares[i] && !DefinedSquares[i])
@@ -180,20 +201,7 @@ namespace projMe
           
             
                 
-            ColorsInit[0] = Color.Yellow;
-            ColorsInit[1] = Color.Lime;
-            ColorsInit[2] = Color.Blue;
-            ColorsInit[3] = Color.Red;
-            ColorsInit[4] = Color.Magenta;
-            ColorsInit[5] = Color.Black;
-            ColorsInit[6] = Color.DarkGreen;
-            ColorsInit[7] = Color.Gray;
-            ColorsInit[8] = Color.FromArgb(128, 128, 200);
-            ColorsInit[9] = Color.Pink;
-            ColorsInit[10] = Color.Purple;
-            ColorsInit[11] = Color.Orange;
-            ColorsInit[12] = Color.LightBlue;
-            ColorsInit[13] = Color.Brown;
+            
 
             
         }
@@ -215,49 +223,75 @@ namespace projMe
             buttonStartGame.Visible = false;
             panelSettingsGame.Visible = false;
             Panel setNicknamesPanel = new Panel();
+            setNicknamesPanel.Name = "generalBox";
             setNicknamesPanel.Size = new Size(this.Width / 3, this.Height / 4);
             setNicknamesPanel.Location = new Point(this.Width / 2 - setNicknamesPanel.Width / 2, this.Height / 2 - setNicknamesPanel.Height / 2);
             setNicknamesPanel.BackColor = Color.White;
             setNicknamesPanel.BorderStyle = BorderStyle.FixedSingle;
             this.Controls.Add(setNicknamesPanel);
-            Panel nick1 = new Panel();
-            nick1.Size = new Size(setNicknamesPanel.Width / 2 - 4, setNicknamesPanel.Height - 4);
-            nick1.Location = new Point(1, 1);
-            nick1.BackColor = Color.Green;
+            Panel nick1Box = new Panel();
+            nick1Box.Name = "nick1Box";
+            nick1Box.Size = new Size(setNicknamesPanel.Width / 2 - 4, setNicknamesPanel.Height - 4);
+            nick1Box.Location = new Point(1, 1);
+            nick1Box.BackColor = Color.Green;
             TextBox nick1insert = new TextBox();
-            nick1insert.Width = nick1.Width * 2/3;
-            nick1insert.Location = new Point(nick1.Width/2-nick1insert.Width/2, nick1.Height/2-nick1insert.Height/2);
+            nick1insert.Name = "nick1Ins";
+            nick1insert.Width = nick1Box.Width * 2/3;
+            nick1insert.Location = new Point(nick1Box.Width/2-nick1insert.Width/2, nick1Box.Height/2-nick1insert.Height/2);
+            nick1insert.Text = "Player1";
+            Label n1text = new Label();
+            n1text.Font = new Font("", 16F);
+            n1text.Size = new Size(nick1Box.Width, 50);
+            n1text.Location = new Point(0, nick1insert.Location.Y/2 - nick1Box.Location.Y/2-n1text.Height/2);
+            n1text.Text = "Insert player 1 nickname";
+            n1text.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             Button nick1Confirm = new Button();
             nick1Confirm.Size = new Size(nick1insert.Width, nick1insert.Height * 2);
-            nick1Confirm.Location = new Point(nick1insert.Location.X, nick1insert.Location.Y+(nick1.Height-nick1insert.Location.Y)/2);
+            nick1Confirm.Location = new Point(nick1insert.Location.X, nick1insert.Location.Y+(nick1Box.Height-nick1insert.Location.Y)/2);
             nick1Confirm.Text = "Confirm";
             nick1Confirm.ForeColor = Color.White;
-            nick1.Controls.Add(nick1insert);
-            nick1.Controls.Add(nick1Confirm);
+            nick1Box.Controls.Add(nick1insert);
+            nick1Box.Controls.Add(nick1Confirm);
+            nick1Box.Controls.Add(n1text);
             
-            Panel nick2 = new Panel();
-            nick2.Size = new Size(setNicknamesPanel.Width / 2 - 4, setNicknamesPanel.Height - 4);
-            nick2.Location = new Point(nick1.Width+5, 1);
-            nick2.BackColor = Color.Green;
+            Panel nick2Box = new Panel();
+            nick2Box.Name = "nick2Box";
+            nick2Box.Size = new Size(setNicknamesPanel.Width / 2 - 4, setNicknamesPanel.Height - 4);
+            nick2Box.Location = new Point(nick1Box.Width+5, 1);
+            nick2Box.BackColor = Color.Green;
             TextBox nick2insert = new TextBox();
-            nick2insert.Width = nick2.Width * 2 / 3;
-            nick2insert.Location = new Point(nick2.Width / 2 - nick2insert.Width / 2, nick2.Height / 2 - nick2insert.Height / 2);
+            nick2insert.Name = "nick2Ins";
+            nick2insert.Width = nick2Box.Width * 2 / 3;
+            nick2insert.Location = new Point(nick2Box.Width / 2 - nick2insert.Width / 2, nick2Box.Height / 2 - nick2insert.Height / 2);
+            nick2insert.Text = "Player2";
+            Label n2text = new Label();
+            n2text.Font = new Font("", 16F);
+            n2text.Size = new Size(nick2Box.Width, 50);
+            n2text.Location = new Point(0, nick2insert.Location.Y / 2 - nick2Box.Location.Y / 2 - n2text.Height / 2);
+            n2text.Text = "Insert player 2 nickname";
+            n2text.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             Button nick2Confirm = new Button();
             nick2Confirm.Size = new Size(nick2insert.Width, nick2insert.Height * 2);
-            nick2Confirm.Location = new Point(nick2insert.Location.X, nick2insert.Location.Y + (nick2.Height - nick2insert.Location.Y) / 2);
+            nick2Confirm.Location = new Point(nick2insert.Location.X, nick2insert.Location.Y + (nick2Box.Height - nick2insert.Location.Y) / 2);
             nick2Confirm.Text = "Confirm";
             nick2Confirm.ForeColor = Color.White;
-            nick2.Controls.Add(nick2insert);
-            nick2.Controls.Add(nick2Confirm);
-            setNicknamesPanel.Controls.Add(nick1);
-            setNicknamesPanel.Controls.Add(nick2);
+            nick2Box.Controls.Add(nick2insert);
+            nick2Box.Controls.Add(nick2Confirm);
+            nick2Box.Controls.Add(n2text);
+
+            setNicknamesPanel.Controls.Add(nick1Box);
+            setNicknamesPanel.Controls.Add(nick2Box);
+
+            nick1Confirm.Click += new System.EventHandler(p1isNowReady);
+            nick2Confirm.Click += new System.EventHandler(p2isNowReady);
 
         }
         private void gameStart()
         {
+            this.Controls.Remove(this.Controls.Find("generalBox", true)[0]);
             FlowLayoutPanel flw = new FlowLayoutPanel();
-
-            int defPadding = 11;
+            flw.Visible = false;
+            int defPadding = 20;
             panelSettingsGame.Visible = false;
 
 
@@ -426,6 +460,62 @@ namespace projMe
 
             #endregion
             buttonStartGame.Visible = false;
+            #region labels Nickname and Points
+            Label player1Label = new Label();
+            player1Label.Name = "p1lbl";
+            player1Label.AutoSize = true;
+            player1Label.Font = new Font("", 13f);
+            player1Label.Text = player1nickname;
+            player1Label.Size = new Size(player1Label.Width, 26);
+            player1Label.Location = new Point(0, 30);
+            player1Label.BorderStyle = BorderStyle.FixedSingle;
+            this.Controls.Add(player1Label);
+            
+            Label player1score = new Label();
+            player1score.Name = "p1pts";
+            player1score.AutoSize = true;
+            player1score.Font = new Font("", 13f);
+            player1score.Text = "0";
+            player1score.Location = new Point(player1Label.Width-2, 30);
+            player1score.Size = new Size(player1score.Width, 26);
+            player1score.BorderStyle = BorderStyle.FixedSingle;
+            player1score.Font = new Font("", 13f);
+            
+            this.Controls.Add(player1score);
+
+            Label player2Label = new Label();
+            player2Label.Name = "p2lbl";
+            player2Label.AutoSize = true;
+            player2Label.Font = new Font("", 13f);
+            player2Label.Text = player2nickname;
+            this.Controls.Add(player2Label);
+            player2Label.Size = new Size(player2Label.Width, 26);
+            player2Label.Location = new Point(this.Width-player2Label.Width, 30);
+            player2Label.BorderStyle = BorderStyle.FixedSingle;
+            
+            
+            Label player2score = new Label();
+            player2score.Name = "p2pts";
+            player2score.AutoSize = true;
+            player2score.Font = new Font("", 13f);
+            player2score.Text = "0";
+            this.Controls.Add(player2score);
+            player2score.Size = new Size(player2score.Width, 26);
+            player2score.Location = new Point(player2Label.Location.X-player2score.Width, 30);
+            player2score.BorderStyle = BorderStyle.FixedSingle;
+            #endregion
+            Random rch = new Random();
+            CurrentPlayer = rch.Next(1, 3);
+            if (CurrentPlayer == 1)
+            {
+                CPisNow1();
+            }
+            else
+            {
+                CPisNow2();
+            }
+            
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -441,17 +531,17 @@ namespace projMe
             labelTentativi.Size = new Size(20, 20);
             buttonRestart.Location = new Point(screenWidth - buttonRestart.Width, screenHeight - buttonRestart.Height);
 
-            Button buttonExit = new Button()
-            {
-                Size = new Size(30, 30),
-                Location = new Point(this.Width - 30, 0),
-                BackColor = Color.Red,
-                ForeColor = Color.White,
-                TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+            //Button buttonExit = new Button()
+            //{
+            //    Size = new Size(30, 30),
+            //    Location = new Point(this.Width - 30, 0),
+            //    BackColor = Color.Red,
+            //    ForeColor = Color.White,
+            //    TextAlign = System.Drawing.ContentAlignment.MiddleCenter
 
-            };
-            this.Controls.Add(buttonExit);
-            buttonExit.Click += new System.EventHandler(exit);
+            //};
+            //this.Controls.Add(buttonExit);
+            //buttonExit.Click += new System.EventHandler(exit);
         }
         
        
@@ -464,18 +554,61 @@ namespace projMe
         {
             Application.Restart();
         }
-        private void exit(object sender, EventArgs e)
+        private void exit()
         {
             Application.Exit();
         }
 
         
 
-        private void button2_Click(object sender, EventArgs e)
+        
+        void p1isNowReady(object sender, EventArgs e)
         {
-            MessageBox.Show(Squares[0].Location.ToString());
+            p1status = true;
+            (sender as Button).Text = "Confirmed";
+            (sender as Button).Enabled = false;
+            player1nickname = this.Controls.Find("generalBox", false)[0].Controls.Find("nick1Box", false)[0].Controls.Find("nick1Ins", false)[0].Text;
+            
+            if (p2status)
+            {
+                gameStart();
+            }
         }
 
-        
+        void p2isNowReady(object sender, EventArgs e)
+        {
+            p2status = true;
+            (sender as Button).Text = "Confirmed";
+            (sender as Button).Enabled = false;
+            player2nickname = this.Controls.Find("generalBox", false)[0].Controls.Find("nick2Box", false)[0].Controls.Find("nick2Ins", false)[0].Text;
+            if (p1status)
+            {
+                gameStart();
+            }
+        }
+        void keyPress(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                exit();
+            }
+            MessageBox.Show("diocane");
+        }
+        void CPisNow1()
+        {
+            CurrentPlayer = 1;
+            this.Controls.Find("p1lbl", false)[0].BackColor = Color.Lime;
+            this.Controls.Find("p1pts", false)[0].BackColor = Color.Lime;
+            this.Controls.Find("p2lbl", false)[0].BackColor = Color.White;
+            this.Controls.Find("p2pts", false)[0].BackColor = Color.White;
+        }
+        void CPisNow2()
+        {
+            CurrentPlayer = 2;
+            this.Controls.Find("p2lbl", false)[0].BackColor = Color.Lime;
+            this.Controls.Find("p2pts", false)[0].BackColor = Color.Lime;
+            this.Controls.Find("p1lbl", false)[0].BackColor = Color.White;
+            this.Controls.Find("p1pts", false)[0].BackColor = Color.White;
+        }
     }
 }

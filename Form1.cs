@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -22,10 +23,10 @@ namespace projMe
     public partial class Form1 : Form
     {
 
-        PictureBox[] Squares = new PictureBox[28];
+        PictureBox[] Squares = new PictureBox[0];
         Color[] ColorsInit = new Color[14];
       
-        int[] allPositions = new int[28];
+        int[] allPositions = new int[0];
         
         int screenHeight = Screen.PrimaryScreen.Bounds.Height;
         int screenWidth = Screen.PrimaryScreen.Bounds.Width;
@@ -35,9 +36,9 @@ namespace projMe
 
         int firstPos = -1;
         int secondPos = -1;
-        bool[] DiscoveredSquares = new bool[28];
-        bool[] DefinedSquares = new bool[28];
-        Label[] ColorPrevisionLabels = new Label[28];
+        bool[] DiscoveredSquares = new bool[0];
+        bool[] DefinedSquares = new bool[0];
+        Label[] ColorPrevisionLabels = new Label[0];
         Image HiddenSquareImg = Image.FromFile(Path.Combine(@"img", "not_seen.png"));
         bool gameHasColorsShown = false;
         bool p1status = false;
@@ -47,6 +48,8 @@ namespace projMe
         int player1pt = default;
         int player2pt = default;
         int CurrentPlayer = default;
+        int maxpoints = 7;
+        int numSquares = default;
         public Form1()
         {
             InitializeComponent();
@@ -64,7 +67,7 @@ namespace projMe
 
             
             int numDiscovers = 0;
-            for (int i = 0; i < 28; i++)
+            for (int i = 0; i < numSquares; i++)
             {
                 if (ClickedSquare == Squares[i])
                 {
@@ -73,7 +76,7 @@ namespace projMe
                 }
             }
 
-            for (int i = 0; i < 28; i++)
+            for (int i = 0; i < numSquares; i++)
             {
                 if (DiscoveredSquares[i] && !DefinedSquares[i])
                 {
@@ -99,7 +102,7 @@ namespace projMe
                 {
                     DefinedSquares[firstPos] = true;
                     DefinedSquares[secondPos] = true;
-                    for ( int i = 0; i<28; i++)
+                    for ( int i = 0; i<numSquares; i++)
                     {
                         Squares[i].Enabled = false;
                     }
@@ -118,11 +121,11 @@ namespace projMe
                         this.Controls.Find("p2pts", false)[0].Text = player2pt.ToString();
                         this.Controls.Find("p2pts", false)[0].Location = new Point(this.Controls.Find("p2lbl", false)[0].Location.X - this.Controls.Find("p2pts", false)[0].Width, 30);
                     }
-                    for (int i = 0; i < 28; i++)
+                    for (int i = 0; i < numSquares; i++)
                     {
                         Squares[i].Enabled = true;
                     }
-                    for (int i = 0; i < 28; i++)
+                    for (int i = 0; i < numSquares; i++)
                     {
                         if (!DefinedSquares[i])
                         {
@@ -138,33 +141,20 @@ namespace projMe
                     {
                         MessageBox.Show($"{player1nickname} wins");
                     }
-                    else
+                    if (player2pt>player1pt)
                     {
                         MessageBox.Show($"{player2nickname} wins");
                     }
-                    //
-                    Squares = new PictureBox[28];
-                    p1status = false;
-                    p2status = false;
-                    this.Controls.Remove(this.Controls.Find("p1pts", false)[0]);
-                    this.Controls.Remove(this.Controls.Find("p1lbl", false)[0]);
-                    this.Controls.Remove(this.Controls.Find("p2pts", false)[0]);
-                    this.Controls.Remove(this.Controls.Find("p2lbl", false)[0]);
-                    player1pt = 0;
-                    player2pt = 0;
-                    if (gameHasColorsShown)
+                    if (player2pt==player1pt)
                     {
-                        for (int a = 0; a < 28; a++)
-                        {
-                            this.Controls.Remove(ColorPrevisionLabels[a]);
-                        }
+                        MessageBox.Show("draw!");
                     }
-                    buttonStartGame.Visible = true;
-                    panelSettingsGame.Visible = true;
+                    //
+                    reset();
                     //
                     return;
                 }
-                for (int i = 0; i<28; i++)
+                for (int i = 0; i<numSquares; i++)
                 {
                     Squares[i].Enabled = false;
                 }
@@ -178,7 +168,7 @@ namespace projMe
                 {
                     CPisNow1();
                 }
-                for (int i = 0; i < 28; i++)
+                for (int i = 0; i < numSquares; i++)
                 {
                     if (DiscoveredSquares[i] && !DefinedSquares[i])
                     {
@@ -191,13 +181,13 @@ namespace projMe
                     }
                 }
                 
-                for (int i = 0; i < 28; i++)
+                for (int i = 0; i < numSquares; i++)
                 {
                     Squares[i].Enabled = true;
                 }
             }
-         
-            
+
+          //  MessageBox.Show(numDiscovers.ToString());
           
             
                 
@@ -220,6 +210,7 @@ namespace projMe
         }
         private void buttonStartGame_Click(object sender, EventArgs e)
         {
+            numSquares = maxpoints * 2;
             buttonStartGame.Visible = false;
             panelSettingsGame.Visible = false;
             Panel setNicknamesPanel = new Panel();
@@ -286,12 +277,19 @@ namespace projMe
             nick2Confirm.Click += new System.EventHandler(p2isNowReady);
 
         }
-        private void gameStart()
+        private async void gameStart()
         {
+            DiscoveredSquares = new bool[numSquares];
+            DefinedSquares = new bool[numSquares];
+            ColorPrevisionLabels = new Label[numSquares];
+            Squares = new PictureBox[numSquares];
+            ColorsInit = new Color[14];
+
+            allPositions = new int[numSquares];
             this.Controls.Remove(this.Controls.Find("generalBox", true)[0]);
             FlowLayoutPanel flw = new FlowLayoutPanel();
             flw.Visible = false;
-            int defPadding = 20;
+            int defPadding = 11;
             panelSettingsGame.Visible = false;
 
 
@@ -323,15 +321,15 @@ namespace projMe
             ColorsInit[13] = Color.Brown;
             #endregion
             #region positions/discovers
-            for (int i = 0; i < 28; i++)
+            for (int i = 0; i < numSquares; i++)
             {
                 allPositions[i] = i;
             }
-            for (int i = 0; i < 28; i++)
+            for (int i = 0; i < numSquares; i++)
             {
                 DiscoveredSquares[i] = false;
             }
-            for (int i = 0; i < 28; i++)
+            for (int i = 0; i < numSquares; i++)
             {
                 DefinedSquares[i] = false;
             }
@@ -341,7 +339,7 @@ namespace projMe
 
 
             #region squaresDefinitions
-            for (int a = 0; a < 14; a++)
+            for (int a = 0; a < numSquares/2; a++)
             {
                 PictureBox x = new PictureBox();
                 x.Size = new Size(defSize, defSize);
@@ -354,7 +352,7 @@ namespace projMe
 
 
             }
-            for (int a = 14; a < 28; a++)
+            for (int a = numSquares/2; a < numSquares; a++)
             {
                 PictureBox x = new PictureBox();
                 x.Size = new Size(defSize, defSize);
@@ -363,15 +361,16 @@ namespace projMe
                 Squares[a].Margin = new Padding(defPadding);
                 Squares[a].Image = HiddenSquareImg;
                 Squares[a].BorderStyle = BorderStyle.FixedSingle;
-                Squares[a].Tag = ColorsInit[a - 14];
+                Squares[a].Tag = ColorsInit[a - numSquares / 2];
             }
-            for (int x = 0; x < 28; x++)
-            {
-                var random = new Faker();
-                int rc = random.PickRandom(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27);
-                Color tagColor = (Color)Squares[x].Tag;
-                Squares[x].Tag = (Color)Squares[rc].Tag;
-                Squares[rc].Tag = tagColor;
+            for (int x = 0; x < numSquares; x++)
+            {      
+                Random rd = new Random();
+                int rc = rd.Next(0, numSquares);
+                PictureBox tm = Squares[x];
+                Squares[x] = Squares[rc];
+                Squares[rc] = tm;
+                await Task.Delay(1);
 
 
             }
@@ -379,7 +378,7 @@ namespace projMe
             #region addControls...
 
 
-            for (int a = 0; a < 28; a++)
+            for (int a = 0; a < numSquares; a++)
             {
 
                 flw.Controls.Add(Squares[a]);
@@ -387,7 +386,7 @@ namespace projMe
             }
             int inRowBoxes = 1;
             int yPos = Squares[0].Location.Y;
-            for (int n = 1; n < 28; n++)
+            for (int n = 1; n < numSquares; n++)
             {
                 if (Squares[n].Location.Y == yPos)
                 {
@@ -398,7 +397,7 @@ namespace projMe
             //
             int inColBoxes = 1;
             int xPos = Squares[0].Location.X;
-            for (int n = inRowBoxes; n < 28; n = n + inRowBoxes)
+            for (int n = inRowBoxes; n < numSquares; n = n + inRowBoxes)
             {
                 if (Squares[n].Location.X == xPos)
                 {
@@ -415,10 +414,10 @@ namespace projMe
             int column = 0;
             int m = 0;
 
-            for (int i = 0; i < 28; i = i + inRowBoxes)
+            for (int i = 0; i < numSquares; i = i + inRowBoxes)
             {
                 int p = 0;
-                while (m < inRowBoxes * (column + 1) && m < 28)
+                while (m < inRowBoxes * (column + 1) && m < numSquares)
                 {
                     flw.Controls.Remove(Squares[m]);
                     Squares[m].Location = new Point(firstSquareXpos + p * (defSize + 2 * defPadding), firstSquareYpos + column * (defSize + 2 * defPadding));
@@ -434,7 +433,7 @@ namespace projMe
             if (CheckColorPrevision.Checked)
             {
                 gameHasColorsShown = true;
-                for (int a = 0; a < 28; a++)
+                for (int a = 0; a < numSquares; a++)
                 {
                     Label l = new Label();
                     l.Location = new Point(Squares[a].Location.X, Squares[a].Location.Y - 30);
@@ -448,7 +447,7 @@ namespace projMe
             #endregion
             #region EventHandlers
 
-            for (int i = 0; i < 28; i++)
+            for (int i = 0; i < numSquares; i++)
             {
                 Squares[i].Click += new System.EventHandler(Sq_Click);
                 Squares[i].MouseEnter += new System.EventHandler(HoverInsideSquare);
@@ -609,6 +608,43 @@ namespace projMe
             this.Controls.Find("p2pts", false)[0].BackColor = Color.Lime;
             this.Controls.Find("p1lbl", false)[0].BackColor = Color.White;
             this.Controls.Find("p1pts", false)[0].BackColor = Color.White;
+        }
+        void reset()
+        {
+            Squares = new PictureBox[28];
+            p1status = false;
+            p2status = false;
+            this.Controls.Remove(this.Controls.Find("p1pts", false)[0]);
+            this.Controls.Remove(this.Controls.Find("p1lbl", false)[0]);
+            this.Controls.Remove(this.Controls.Find("p2pts", false)[0]);
+            this.Controls.Remove(this.Controls.Find("p2lbl", false)[0]);
+            player1pt = 0;
+            player2pt = 0;
+            if (gameHasColorsShown)
+            {
+                for (int a = 0; a < numSquares; a++)
+                {
+                    this.Controls.Remove(ColorPrevisionLabels[a]);
+                }
+            }
+            buttonStartGame.Visible = true;
+            panelSettingsGame.Visible = true;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            maxpoints = int.Parse(textBoxBX.Text);
+            if (maxpoints >= 29) return;
+            maxpoints = maxpoints + 2;
+            textBoxBX.Text = maxpoints.ToString();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            maxpoints = int.Parse(textBoxBX.Text);
+            if (maxpoints <= 3) return;
+            maxpoints = maxpoints - 2;
+            textBoxBX.Text = maxpoints.ToString();
         }
     }
 }

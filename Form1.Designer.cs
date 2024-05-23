@@ -59,10 +59,11 @@
             // CheckColorPrevision
             // 
             this.CheckColorPrevision.AutoSize = true;
+            this.CheckColorPrevision.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.CheckColorPrevision.Location = new System.Drawing.Point(36, 17);
             this.CheckColorPrevision.Margin = new System.Windows.Forms.Padding(2);
             this.CheckColorPrevision.Name = "CheckColorPrevision";
-            this.CheckColorPrevision.Size = new System.Drawing.Size(105, 17);
+            this.CheckColorPrevision.Size = new System.Drawing.Size(123, 17);
             this.CheckColorPrevision.TabIndex = 2;
             this.CheckColorPrevision.Text = "pre-visione colori";
             this.CheckColorPrevision.UseVisualStyleBackColor = true;

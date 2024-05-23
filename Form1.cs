@@ -17,6 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+using System.Xml.XPath;
 
 namespace projMe
 {
@@ -133,25 +134,70 @@ namespace projMe
                             return;
                         }
                     }
-                    //MessageBox.Show("hai vinto");
+                    string winner = default;
+                    if (player1pt > player2pt)
+                    {
+                        winner = $"{player1nickname} wins";
+                    }
+                    if (player1pt == player2pt)
+                    {
+                        winner = "Draw";
+                    }
+                    if (player1pt < player2pt)
+                    {
+                        winner = $"{player2nickname} wins";
+                    }
 
-                    await Task.Delay(2000);
+
+                    await Task.Delay(900);
+                    Panel brs = new Panel();
+                    brs.Size = new Size(this.Width / 3 - 20, this.Height / 3 - 20);
                     
-                    if (player1pt>player2pt)
-                    {
-                        MessageBox.Show($"{player1nickname} wins");
-                    }
-                    if (player2pt>player1pt)
-                    {
-                        MessageBox.Show($"{player2nickname} wins");
-                    }
-                    if (player2pt==player1pt)
-                    {
-                        MessageBox.Show("draw!");
-                    }
+                    brs.BackColor = Color.Black;
+                    PanelCenter(ref brs, brs.Width, brs.Height);
+                    this.Controls.Add(brs);
+                    Panel ResultsBox = new Panel();
+                    ResultsBox.Size = new Size(this.Width / 3 - 10, this.Height / 3 - 10);
+                    ResultsBox.BorderStyle = BorderStyle.FixedSingle;
+                    ResultsBox.BackColor = Color.FromArgb(66,66,66);
+                    ResultsBox.Location = new Point(10, 10);
+
+                    brs.Controls.Add(ResultsBox);
+                    
+                  
+                    Label lbpsc = new Label();
+                    lbpsc.Size = new Size(ResultsBox.Width, ResultsBox.Height / 4);
+                    lbpsc.Font = new Font("", 27f, System.Drawing.FontStyle.Bold);
+                    lbpsc.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+                    lbpsc.Text = $"{player1nickname}  {player2nickname}";
+                    lbpsc.ForeColor = Color.White;
+                    lbpsc.Location = new Point(0, ResultsBox.Height/3-lbpsc.Height/2);
+                    ResultsBox.Controls.Add(lbpsc);
+                    Label lbsc = new Label();
+                    lbsc.Size = new Size(ResultsBox.Width, ResultsBox.Height / 4);
+                    lbsc.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+                    lbsc.Font = new Font("", 27f, System.Drawing.FontStyle.Bold);
+                    lbsc.ForeColor = Color.White;
+                    lbsc.Text = $"{player1pt} - {player2pt}";
+                    lbsc.Location = new Point(0, ResultsBox.Height/3*2-lbsc.Height/2);
+                    ResultsBox.Controls.Add(lbsc);
+                    await Task.Delay(3000);
+                    this.Controls.Remove(ResultsBox);
+                    //if (player1pt>player2pt)
+                    //{
+                    //    MessageBox.Show($"{player1nickname} wins");
+                    //}
+                    //if (player2pt>player1pt)
+                    //{
+                    //    MessageBox.Show($"{player2nickname} wins");
+                    //}
+                    //if (player2pt==player1pt)
+                    //{
+                    //    MessageBox.Show("draw!");
+                    //}
                     //
                     reset();
-                    //
+                    
                     return;
                 }
                 for (int i = 0; i<numSquares; i++)
@@ -530,17 +576,17 @@ namespace projMe
             labelTentativi.Size = new Size(20, 20);
             buttonRestart.Location = new Point(screenWidth - buttonRestart.Width, screenHeight - buttonRestart.Height);
 
-            //Button buttonExit = new Button()
-            //{
-            //    Size = new Size(30, 30),
-            //    Location = new Point(this.Width - 30, 0),
-            //    BackColor = Color.Red,
-            //    ForeColor = Color.White,
-            //    TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+            Button buttonExit = new Button()
+            {
+                Size = new Size(30, 30),
+                Location = new Point(this.Width - 30, 0),
+                BackColor = Color.Red,
+                ForeColor = Color.White,
+                TextAlign = System.Drawing.ContentAlignment.MiddleCenter
 
-            //};
-            //this.Controls.Add(buttonExit);
-            //buttonExit.Click += new System.EventHandler(exit);
+            };
+            this.Controls.Add(buttonExit);
+            buttonExit.Click += new System.EventHandler(exit);
         }
         
        
@@ -553,7 +599,7 @@ namespace projMe
         {
             Application.Restart();
         }
-        private void exit()
+        private void exit(object sender, EventArgs e)
         {
             Application.Exit();
         }
@@ -589,7 +635,7 @@ namespace projMe
         {
             if (e.KeyCode == Keys.Escape)
             {
-                exit();
+                exit(sender, e);
             }
             MessageBox.Show("diocane");
         }
@@ -645,6 +691,10 @@ namespace projMe
             if (maxpoints <= 3) return;
             maxpoints = maxpoints - 2;
             textBoxBX.Text = maxpoints.ToString();
+        }
+        void PanelCenter(ref Panel panel, int width, int height)
+        {
+            panel.Location = new Point(this.Width/2-width/2, this.Height/2-height/2);
         }
     }
 }

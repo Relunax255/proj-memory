@@ -1,5 +1,4 @@
-﻿
-using projMe.Properties;
+﻿using projMe.Properties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

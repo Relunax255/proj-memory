@@ -134,30 +134,25 @@ namespace projMe
                             return;
                         }
                     }
-                    string winner = default;
-                    if (player1pt > player2pt)
-                    {
-                        winner = $"{player1nickname} wins";
-                    }
-                    if (player1pt == player2pt)
-                    {
-                        winner = "Draw";
-                    }
-                    if (player1pt < player2pt)
-                    {
-                        winner = $"{player2nickname} wins";
-                    }
+                    
 
 
                     await Task.Delay(900);
+                    if (gameHasColorsShown)
+                    {
+                        for (int a = 0; a < numSquares; a++)
+                        {
+                            this.Controls.Remove(ColorPrevisionLabels[a]);
+                        }
+                    }
                     Panel brs = new Panel();
-                    brs.Size = new Size(this.Width / 3 - 20, this.Height / 3 - 20);
+                    brs.Size = new Size(this.Width / 3 - 10, this.Height / 3 - 10);
                     
                     brs.BackColor = Color.Black;
                     PanelCenter(ref brs, brs.Width, brs.Height);
                     this.Controls.Add(brs);
                     Panel ResultsBox = new Panel();
-                    ResultsBox.Size = new Size(this.Width / 3 - 10, this.Height / 3 - 10);
+                    ResultsBox.Size = new Size(this.Width / 3 - 30, this.Height / 3 - 30);
                     ResultsBox.BorderStyle = BorderStyle.FixedSingle;
                     ResultsBox.BackColor = Color.FromArgb(66,66,66);
                     ResultsBox.Location = new Point(10, 10);
@@ -182,20 +177,8 @@ namespace projMe
                     lbsc.Location = new Point(0, ResultsBox.Height/3*2-lbsc.Height/2);
                     ResultsBox.Controls.Add(lbsc);
                     await Task.Delay(3000);
-                    this.Controls.Remove(ResultsBox);
-                    //if (player1pt>player2pt)
-                    //{
-                    //    MessageBox.Show($"{player1nickname} wins");
-                    //}
-                    //if (player2pt>player1pt)
-                    //{
-                    //    MessageBox.Show($"{player2nickname} wins");
-                    //}
-                    //if (player2pt==player1pt)
-                    //{
-                    //    MessageBox.Show("draw!");
-                    //}
-                    //
+                    this.Controls.Remove(brs);
+                    
                     reset();
                     
                     return;
@@ -666,13 +649,7 @@ namespace projMe
             this.Controls.Remove(this.Controls.Find("p2lbl", false)[0]);
             player1pt = 0;
             player2pt = 0;
-            if (gameHasColorsShown)
-            {
-                for (int a = 0; a < numSquares; a++)
-                {
-                    this.Controls.Remove(ColorPrevisionLabels[a]);
-                }
-            }
+           
             buttonStartGame.Visible = true;
             panelSettingsGame.Visible = true;
         }

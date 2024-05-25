@@ -25,7 +25,7 @@ namespace projMe
     {
 
         PictureBox[] Squares = new PictureBox[0];
-        Color[] ColorsInit = new Color[14];
+        Color[] ColorsInit = new Color[13];
       
         int[] allPositions = new int[0];
         
@@ -312,7 +312,7 @@ namespace projMe
             DefinedSquares = new bool[numSquares];
             ColorPrevisionLabels = new Label[numSquares];
             Squares = new PictureBox[numSquares];
-            ColorsInit = new Color[14];
+            ColorsInit = new Color[13];
 
             allPositions = new int[numSquares];
             this.Controls.Remove(this.Controls.Find("generalBox", true)[0]);
@@ -342,12 +342,12 @@ namespace projMe
             ColorsInit[5] = Color.Black;
             ColorsInit[6] = Color.DarkGreen;
             ColorsInit[7] = Color.Gray;
-            ColorsInit[8] = Color.FromArgb(128, 128, 200);
+            ColorsInit[8] = Color.Brown;
             ColorsInit[9] = Color.Pink;
             ColorsInit[10] = Color.Purple;
             ColorsInit[11] = Color.Orange;
             ColorsInit[12] = Color.LightBlue;
-            ColorsInit[13] = Color.Brown;
+           
             #endregion
             #region positions/discovers
             for (int i = 0; i < numSquares; i++)
@@ -657,7 +657,7 @@ namespace projMe
         private void button2_Click(object sender, EventArgs e)
         {
             maxpoints = int.Parse(textBoxBX.Text);
-            if (maxpoints >= 29) return;
+            if (maxpoints >= 13) return;
             maxpoints = maxpoints + 2;
             textBoxBX.Text = maxpoints.ToString();
         }

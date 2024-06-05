@@ -24,7 +24,8 @@ namespace projMe
     {
 
         PictureBox[] Squares = new PictureBox[0];
-        Color[] ColorsInit = new Color[13];
+        Image[] InitImgs = new Image[13];
+        
       
         int[] allPositions = new int[0];
         
@@ -40,7 +41,7 @@ namespace projMe
         bool[] DefinedSquares = new bool[0];
         Label[] ColorPrevisionLabels = new Label[0];
         Image HiddenSquareImg = Image.FromFile(Path.Combine(@"img", "not_seen.png"));
-        bool gameHasColorsShown = false;
+        
         bool p1status = false;
         bool p2status = false;
         string player1nickname = default;
@@ -53,7 +54,10 @@ namespace projMe
         public Form1()
         {
             InitializeComponent();
-            
+            for (int x = 0; x<13; x++)
+            {
+                InitImgs[x] = Image.FromFile(Path.Combine(@"img", $"{x+1}.png"));
+            }
         }
         private async void Sq_Click(object sender, EventArgs e)
         {
@@ -61,8 +65,8 @@ namespace projMe
            
             if (ClickedSquare.Image != HiddenSquareImg)
                 return;
-            ClickedSquare.BackColor = (Color)ClickedSquare.Tag;
-            ClickedSquare.Image = null;
+            ClickedSquare.Image = (Image)ClickedSquare.Tag;
+            
             
 
             
@@ -98,7 +102,7 @@ namespace projMe
             }
             if (numDiscovers == 2)
             {
-                if (Squares[firstPos].BackColor == Squares[secondPos].BackColor)
+                if (Squares[firstPos].Image == Squares[secondPos].Image)
                 {
                     DefinedSquares[firstPos] = true;
                     DefinedSquares[secondPos] = true;
@@ -137,18 +141,12 @@ namespace projMe
 
 
                     await Task.Delay(900);
-                    if (gameHasColorsShown)
-                    {
-                        for (int a = 0; a < numSquares; a++)
-                        {
-                            this.Controls.Remove(ColorPrevisionLabels[a]);
-                        }
-                    }
+                   
                     Panel brs = new Panel();
                     brs.Size = new Size(this.Width / 3 - 10, this.Height / 3 - 10);
                     
                     brs.BackColor = Color.Black;
-                    PanelCenter(ref brs, brs.Width, brs.Height);
+                    PanelCenter(ref brs);
                     this.Controls.Add(brs);
                     Panel ResultsBox = new Panel();
                     ResultsBox.Size = new Size(this.Width / 3 - 30, this.Height / 3 - 30);
@@ -215,7 +213,7 @@ namespace projMe
                 }
             }
 
-          //  MessageBox.Show(numDiscovers.ToString());
+          
           
             
                 
@@ -228,10 +226,10 @@ namespace projMe
             if ((sender as PictureBox).Image == HiddenSquareImg)
             Cursor = Cursors.Hand;
         }
-            private void HoverExit(object sender, EventArgs e)
-            {
+        private void HoverExit(object sender, EventArgs e)
+        {
                 Cursor = Cursors.Default;
-            }
+        }
         private void hoverButton(object sender, EventArgs e)
         {
             Cursor = Cursors.Hand;
@@ -311,7 +309,7 @@ namespace projMe
             DefinedSquares = new bool[numSquares];
             ColorPrevisionLabels = new Label[numSquares];
             Squares = new PictureBox[numSquares];
-            ColorsInit = new Color[13];
+            
 
             allPositions = new int[numSquares];
             this.Controls.Remove(this.Controls.Find("generalBox", true)[0]);
@@ -332,22 +330,7 @@ namespace projMe
 
 
             #region Pre-settaggio
-            #region addColorsToArray
-            ColorsInit[0] = Color.Yellow;
-            ColorsInit[1] = Color.Lime;
-            ColorsInit[2] = Color.Blue;
-            ColorsInit[3] = Color.Red;
-            ColorsInit[4] = Color.Magenta;
-            ColorsInit[5] = Color.Black;
-            ColorsInit[6] = Color.DarkGreen;
-            ColorsInit[7] = Color.Gray;
-            ColorsInit[8] = Color.Brown;
-            ColorsInit[9] = Color.Pink;
-            ColorsInit[10] = Color.Purple;
-            ColorsInit[11] = Color.Orange;
-            ColorsInit[12] = Color.LightBlue;
            
-            #endregion
             #region positions/discovers
             for (int i = 0; i < numSquares; i++)
             {
@@ -376,7 +359,7 @@ namespace projMe
                 Squares[a].Margin = new Padding(defPadding);
                 Squares[a].Image = HiddenSquareImg;
                 Squares[a].BorderStyle = BorderStyle.FixedSingle;
-                Squares[a].Tag = ColorsInit[a];
+                Squares[a].Tag = InitImgs[a];
 
 
             }
@@ -389,7 +372,7 @@ namespace projMe
                 Squares[a].Margin = new Padding(defPadding);
                 Squares[a].Image = HiddenSquareImg;
                 Squares[a].BorderStyle = BorderStyle.FixedSingle;
-                Squares[a].Tag = ColorsInit[a - numSquares / 2];
+                Squares[a].Tag = InitImgs[a - numSquares / 2];
             }
             for (int x = 0; x < numSquares; x++)
             {      
@@ -458,20 +441,7 @@ namespace projMe
             }
             this.Controls.Remove(flw);
 
-            if (CheckColorPrevision.Checked)
-            {
-                gameHasColorsShown = true;
-                for (int a = 0; a < numSquares; a++)
-                {
-                    Label l = new Label();
-                    l.Location = new Point(Squares[a].Location.X, Squares[a].Location.Y - 30);
-                    l.Size = new Size(100, 30);
-                    l.ForeColor = (Color)Squares[a].Tag;
-                    l.Text = Squares[a].Tag.ToString();
-                    ColorPrevisionLabels[a] = l;
-                    this.Controls.Add(l);
-                }
-            }
+           
             #endregion
             #region EventHandlers
 
@@ -668,9 +638,11 @@ namespace projMe
             maxpoints = maxpoints - 2;
             textBoxBX.Text = maxpoints.ToString();
         }
-        void PanelCenter(ref Panel panel, int width, int height)
+        void PanelCenter(ref Panel panel)
         {
-            panel.Location = new Point(this.Width/2-width/2, this.Height/2-height/2);
+            panel.Location = new Point(this.Width/2-panel.Width/2, this.Height/2-panel.Height/2);
         }
+
+        
     }
 }

@@ -33,8 +33,8 @@ namespace projMe
         int screenWidth = Screen.PrimaryScreen.Bounds.Width;
         
 
-        int defSize = Screen.PrimaryScreen.Bounds.Height/8;
-
+        
+        int squareRoot = default;
         int firstPos = -1;
         int secondPos = -1;
         bool[] DiscoveredSquares = new bool[0];
@@ -56,7 +56,7 @@ namespace projMe
             InitializeComponent();
             for (int x = 0; x<13; x++)
             {
-                InitImgs[x] = Image.FromFile(Path.Combine(@"img", $"{x+1}.png"));
+                InitImgs[x] = Image.FromFile(Path.Combine(@"img", @"gameimgs", $"{x+1}.png"));
             }
         }
         private async void Sq_Click(object sender, EventArgs e)
@@ -237,6 +237,7 @@ namespace projMe
         private void buttonStartGame_Click(object sender, EventArgs e)
         {
             numSquares = maxpoints * 2;
+            squareRoot = (int)Math.Sqrt(numSquares);
             buttonStartGame.Visible = false;
             panelSettingsGame.Visible = false;
             Panel setNicknamesPanel = new Panel();
@@ -315,12 +316,14 @@ namespace projMe
             this.Controls.Remove(this.Controls.Find("generalBox", true)[0]);
             FlowLayoutPanel flw = new FlowLayoutPanel();
             flw.Visible = false;
-            int defPadding = 11;
+            
+            int defSize = Screen.PrimaryScreen.Bounds.Height / 8;
+            int defPadding = defSize / 10;
             panelSettingsGame.Visible = false;
 
 
 
-            flw.Size = new Size(Width - 100, Height - 100);
+            flw.Size = new Size((squareRoot+1)*(defPadding*2+defSize), (squareRoot+1) * (defPadding * 2 + defSize));
             flw.Location = new Point(50, 50);
             flw.BorderStyle = BorderStyle.FixedSingle;
             this.Controls.Add(flw);
@@ -523,7 +526,7 @@ namespace projMe
             this.Location = new Point(0, 0);
             this.Size = new Size(screenWidth, screenHeight);
             buttonStartGame.Location = new Point(screenWidth / 2 - buttonStartGame.Width / 2, screenHeight / 2 - buttonStartGame.Width / 2);
-            panelSettingsGame.Location = new Point(buttonStartGame.Location.X, buttonStartGame.Location.Y+buttonStartGame.Size.Height+4);
+            panelSettingsGame.Location = new Point(Width/2-panelSettingsGame.Width/2, buttonStartGame.Location.Y+buttonStartGame.Size.Height+4);
             labelTentativi.Location = new Point(screenWidth / 2 + 10, 20);
             labelTentativi.Size = new Size(20, 20);
             buttonRestart.Location = new Point(screenWidth - buttonRestart.Width, screenHeight - buttonRestart.Height);

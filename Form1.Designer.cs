@@ -45,10 +45,9 @@
             // buttonStartGame
             // 
             this.buttonStartGame.Font = new System.Drawing.Font("Tahoma", 22.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonStartGame.Location = new System.Drawing.Point(553, 262);
-            this.buttonStartGame.Margin = new System.Windows.Forms.Padding(4);
+            this.buttonStartGame.Location = new System.Drawing.Point(415, 213);
             this.buttonStartGame.Name = "buttonStartGame";
-            this.buttonStartGame.Size = new System.Drawing.Size(280, 69);
+            this.buttonStartGame.Size = new System.Drawing.Size(210, 56);
             this.buttonStartGame.TabIndex = 0;
             this.buttonStartGame.Text = "Start game";
             this.buttonStartGame.UseVisualStyleBackColor = true;
@@ -63,19 +62,18 @@
             this.panelSettingsGame.Controls.Add(this.xjjx);
             this.panelSettingsGame.Controls.Add(this.button2);
             this.panelSettingsGame.Controls.Add(this.button1);
-            this.panelSettingsGame.Location = new System.Drawing.Point(553, 362);
-            this.panelSettingsGame.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.panelSettingsGame.Location = new System.Drawing.Point(430, 274);
+            this.panelSettingsGame.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.panelSettingsGame.Name = "panelSettingsGame";
-            this.panelSettingsGame.Size = new System.Drawing.Size(242, 136);
+            this.panelSettingsGame.Size = new System.Drawing.Size(182, 111);
             this.panelSettingsGame.TabIndex = 8;
             // 
             // textBoxBX
             // 
             this.textBoxBX.Enabled = false;
-            this.textBoxBX.Location = new System.Drawing.Point(92, 70);
-            this.textBoxBX.Margin = new System.Windows.Forms.Padding(4);
+            this.textBoxBX.Location = new System.Drawing.Point(69, 57);
             this.textBoxBX.Name = "textBoxBX";
-            this.textBoxBX.Size = new System.Drawing.Size(59, 22);
+            this.textBoxBX.Size = new System.Drawing.Size(45, 20);
             this.textBoxBX.TabIndex = 13;
             this.textBoxBX.Text = "7";
             // 
@@ -83,19 +81,17 @@
             // 
             this.xjjx.AutoSize = true;
             this.xjjx.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.xjjx.Location = new System.Drawing.Point(44, 47);
-            this.xjjx.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.xjjx.Location = new System.Drawing.Point(33, 38);
             this.xjjx.Name = "xjjx";
-            this.xjjx.Size = new System.Drawing.Size(71, 16);
+            this.xjjx.Size = new System.Drawing.Size(58, 13);
             this.xjjx.TabIndex = 12;
             this.xjjx.Text = "Max points";
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(160, 66);
-            this.button2.Margin = new System.Windows.Forms.Padding(4);
+            this.button2.Location = new System.Drawing.Point(120, 54);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(36, 31);
+            this.button2.Size = new System.Drawing.Size(27, 25);
             this.button2.TabIndex = 11;
             this.button2.Text = "+";
             this.button2.UseVisualStyleBackColor = true;
@@ -103,10 +99,9 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(48, 66);
-            this.button1.Margin = new System.Windows.Forms.Padding(4);
+            this.button1.Location = new System.Drawing.Point(36, 54);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(36, 31);
+            this.button1.Size = new System.Drawing.Size(27, 25);
             this.button1.TabIndex = 3;
             this.button1.Text = "-";
             this.button1.UseVisualStyleBackColor = true;
@@ -116,17 +111,18 @@
             // 
             this.labelTentativi.AutoSize = true;
             this.labelTentativi.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTentativi.Location = new System.Drawing.Point(637, 32);
+            this.labelTentativi.Location = new System.Drawing.Point(478, 26);
+            this.labelTentativi.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelTentativi.Name = "labelTentativi";
-            this.labelTentativi.Size = new System.Drawing.Size(0, 32);
+            this.labelTentativi.Size = new System.Drawing.Size(0, 26);
             this.labelTentativi.TabIndex = 9;
             // 
             // buttonRestart
             // 
-            this.buttonRestart.Location = new System.Drawing.Point(1144, 507);
-            this.buttonRestart.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.buttonRestart.Location = new System.Drawing.Point(858, 412);
+            this.buttonRestart.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonRestart.Name = "buttonRestart";
-            this.buttonRestart.Size = new System.Drawing.Size(71, 47);
+            this.buttonRestart.Size = new System.Drawing.Size(53, 38);
             this.buttonRestart.TabIndex = 10;
             this.buttonRestart.Text = "Reload";
             this.buttonRestart.UseVisualStyleBackColor = true;
@@ -134,9 +130,9 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1924, 1055);
+            this.ClientSize = new System.Drawing.Size(1443, 857);
             this.Controls.Add(this.buttonRestart);
             this.Controls.Add(this.labelTentativi);
             this.Controls.Add(this.panelSettingsGame);
